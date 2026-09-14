@@ -68,6 +68,11 @@ HUD locked to A Classic. Three ways to put numbers on sod pads: Manila tag, Face
 
 Manila tag locked. Three menus in the locked world: One card, Toy buttons, Tag board. Robot waits on the ground. Waiting on a menu pick, then end-of-game screens.
 
+## 2026-09-14 — End-of-game screens
+
+Toy buttons locked. Three end overlays: Sky (type in the sky), Report card, Giant manila tag. Each has fail+new-record and Casual win. Waiting on a pick, then write `docs/visual-direction.md` to close Phase 1.
+
+
 
 
 

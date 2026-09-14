@@ -1,0 +1,118 @@
+/* End-of-game overlays in the locked world. */
+.end {
+  position: absolute;
+  left: 16px; right: 16px;
+  top: 50%;
+  transform: translateY(-54%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.end h1 {
+  font-family: "Paytone One", sans-serif;
+  font-size: 36px;
+  color: #fff8e7;
+  text-shadow: 2px 2px 0 #16324f, -1px 1px 0 #16324f;
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+.end .score {
+  font-family: "Fredoka", "Nunito", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff8e7;
+  text-shadow: 0 2px 0 rgba(22,50,79,.4);
+}
+.end .score b { color: #ffd166; font-size: 28px; }
+.end .record {
+  margin: 8px 0 4px;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: #1d3557;
+  background: #ffd166;
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 #c49214;
+}
+.end .best {
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(255,248,231,.85);
+  margin-bottom: 14px;
+}
+.end .cta { margin-top: 8px; }
+.end .alt {
+  margin-top: 12px;
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff8e7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hero-fall {
+  position: absolute;
+  left: 58%;
+  top: 22%;
+  width: 70px;
+  transform: rotate(18deg);
+  z-index: 7;
+  filter: drop-shadow(0 8px 0 rgba(0,0,0,.12));
+  opacity: .95;
+}
+.hero-win {
+  position: absolute;
+  left: 50%;
+  bottom: 42%;
+  width: 72px;
+  transform: translateX(-50%);
+  z-index: 7;
+}
+
+/* E1 · Sky overlay — no card, type in the sky */
+body.end-sky .veil {
+  position: absolute; inset: 0;
+  background: rgba(22,50,79,.28);
+  z-index: 15;
+}
+
+/* E2 · Report card */
+body.end-card .end {
+  background: #fffdf6;
+  border-radius: 18px;
+  box-shadow: 7px 8px 0 #16324f;
+  padding: 22px 18px 20px;
+}
+body.end-card .end h1 { color: #16324f; text-shadow: none; font-size: 30px; }
+body.end-card .end .score { color: #16324f; text-shadow: none; }
+body.end-card .end .score b { color: #1d3557; }
+body.end-card .end .best { color: #5a6d80; }
+body.end-card .end .alt { color: #1d3557; }
+
+/* E3 · Giant tag */
+body.end-tag .end {
+  background: #f3e2b8;
+  border-radius: 4px 18px 18px 4px;
+  box-shadow: 8px 9px 0 #16324f;
+  padding: 28px 20px 22px;
+}
+body.end-tag .end::before {
+  content: "";
+  position: absolute;
+  top: -10px; left: 50%;
+  width: 18px; height: 18px;
+  background: #e85d4c;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 3px #fffdf6;
+}
+body.end-tag .end h1 { color: #16324f; text-shadow: none; font-size: 30px; }
+body.end-tag .end .score { color: #16324f; text-shadow: none; }
+body.end-tag .end .score b { color: #16324f; }
+body.end-tag .end .best { color: #5a6d80; }
+body.end-tag .end .alt { color: #16324f; }
