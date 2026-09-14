@@ -3,7 +3,6 @@ import {
   FLOORS_PER_LEVEL,
   JUMP_ARC,
   JUMP_MS,
-  REST_Y,
   SHAKE_FRACTION,
   SKY_BOT,
   SKY_TOP,
@@ -14,6 +13,7 @@ import { pickPair, pairAsNumbers } from "../numbers/pair";
 import { randomRng } from "../numbers/rng";
 import type { ChoicePair, GameConfig, Side } from "../numbers/types";
 import { readBest, writeBest } from "../storage/best";
+import { paceAfterAnswer, paceAfterWait, restYFromPace } from "../cameraPace";
 import { levelForFloor, timeForFloor } from "../timer";
 import { Hud } from "../ui/Hud";
 import { PauseOverlay } from "../pause/PauseOverlay";
@@ -38,6 +38,8 @@ export class PlayScene extends Phaser.Scene {
   private best = 0;
   private cameraY = 0;
   private cameraTarget = 0;
+  private pace = 0;
+  private choiceAt = 0;
   private jumping = false;
   private falling = false;
   private busy = false;
@@ -67,6 +69,7 @@ export class PlayScene extends Phaser.Scene {
     this.paused = false;
     this.onBreak = false;
     this.platforms = [];
+    this.pace = 0;
 
     this.drawSky();
     this.drawGround();
@@ -159,6 +162,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private spawnChoice(worldY: number, paused: boolean): void {
+    this.choiceAt = this.time.now;
     const pair = pickPair(Math.max(1, this.floor + 1), this.config.difficulty, randomRng);
     this.pair = pair;
     const left = new SodPlatform(this, columnX(this, 0.27), worldY, 0.27, pair.left);
@@ -219,6 +223,7 @@ export class PlayScene extends Phaser.Scene {
     const other = side === "left" ? this.rightPlat : this.leftPlat;
     if (!target || !other) return;
     this.busy = true;
+    this.pace = paceAfterAnswer(this.pace, this.time.now - this.choiceAt, this.floor === 0);
 
     const correct = side === this.pair.bigger;
     other.vanish(this);
@@ -269,8 +274,7 @@ export class PlayScene extends Phaser.Scene {
     this.player.jump();
     const fromX = this.player.worldX;
     const fromY = this.player.worldY;
-    const h = playHeight(this);
-    this.cameraTarget = toY - h * (1 - REST_Y);
+    this.retargetCamera(toY);
     const state = { t: 0 };
     this.tweens.add({
       targets: state,
@@ -382,9 +386,26 @@ export class PlayScene extends Phaser.Scene {
     const px = this.stand ? columnX(this, this.stand.xFrac) : columnX(this, 0.5);
     const py = this.stand ? this.stand.worldY : this.groundTop;
     if (!this.jumping && !this.falling) this.player.place(px, py);
+    this.retargetCamera(py);
+  }
+
+  private retargetCamera(standWorldY: number): void {
+    const h = playHeight(this);
+    this.cameraTarget = standWorldY - h * (1 - restYFromPace(this.pace));
   }
 
   update(_time: number, _delta: number): void {
+    if (
+      !this.paused &&
+      !this.falling &&
+      !this.jumping &&
+      !this.onBreak &&
+      this.floor > 0
+    ) {
+      this.pace = paceAfterWait(this.pace, _delta / 1000);
+      this.retargetCamera(this.player.worldY);
+    }
+
     const camErr = this.cameraTarget - this.cameraY;
     this.cameraY += camErr * Math.min(1, (_delta / 1000) * 6);
     this.cameras.main.setScroll(0, this.cameraY);

@@ -1,7 +1,7 @@
 export const PLAY_COLUMN = 420;
 export const GAME_HEIGHT = 844;
 export const STEP = 200;
-export const REST_Y = 0.22;
+export const REST_Y = 0.22; // default / low rest; see cameraPace.ts for live range
 export const FLOORS_PER_LEVEL = 20;
 export const JUMP_MS = 480;
 export const JUMP_ARC = 90;

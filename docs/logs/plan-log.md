@@ -123,6 +123,10 @@ Idle was ping-ponging sheet frame 17 (different vertical crop) so the adventurer
 
 Sheet has no idle loop. Standing cell (frame 0) now has a 2px sine y-bob, 1100ms yoyo, stopped during jump.
 
+## 2026-09-14 — Camera pace
+
+Stand-pad rest height follows answer speed: fast jumps raise `pace` (pad sits up to 60% from the bottom), waiting and slow answers ease it back to 22%. First ground jump does not bump pace.
+
 
 
 
