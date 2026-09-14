@@ -84,6 +84,11 @@ Imagine stills + video harvest for Paper Stack, Kite Bot, Can Bot (idle bob and 
 
 Mike asked to compare the original Foozle robot with the adventurer tilesheet (not Imagine) on the locked layout. Both stand on the two sod pads, labeled. `char-compare-mobile.png` / `char-compare-desktop.png`.
 
+## 2026-09-14 — Adventurer drop shadow
+
+Re-rendered the compare with a slight navy offset drop-shadow on the adventurer (`2px 4px`, 35% #16324f) so he sits on the pad like the paper world.
+
+
 
 
 
