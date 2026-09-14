@@ -72,6 +72,16 @@ Manila tag locked. Three menus in the locked world: One card, Toy buttons, Tag b
 
 Toy buttons locked. Three end overlays: Sky (type in the sky), Report card, Giant manila tag. Each has fail+new-record and Casual win. Waiting on a pick, then write `docs/visual-direction.md` to close Phase 1.
 
+## 2026-09-14 — Report card locked; character exploration
+
+End overlay = Report card. Extra Phase 1 ask: three Imagine cut-paper robot options (Foozle doesn't match C) with idle + jump sheets if possible. Video-first pipeline.
+
+## 2026-09-14 — Character options (4)
+
+Imagine stills + video harvest for Paper Stack, Kite Bot, Can Bot (idle bob and jump). Mike added `reference assets/adventurer_tilesheet.png` (Kenney-style 80×110, 9×3). Sliced idle (`0,0` + `1,8`) and jump (`1,0` duck, `0,4` air, `2,2` kick) into sheets. In-game composites on C+Sod+A HUD. Wrote `docs/visual-direction.md` with everything locked except the character pick. Paper cutouts vs cobalt sky eat navy helmet/shadow — stills are the clean R1–R3 look.
+
+
+
 
 
 

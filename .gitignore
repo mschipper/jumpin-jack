@@ -20,3 +20,9 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Phase 1 harvested video frames (sheets are committed)
+docs/mockups/phase1-characters/frames-*/
+docs/mockups/phase1-characters/adventurer-cells/
+docs/mockups/phase1-characters/*.mp4
+docs/mockups/phase1-characters/probe-*.png

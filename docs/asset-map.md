@@ -69,6 +69,10 @@ No license files sit next to these. Treat them as project audio unless Mike says
 
 ---
 
+## Adventurer tilesheet (have — character option)
+
+`reference assets/adventurer_tilesheet.png` — Kenney-style pixel adventurer, 720×330, 9×3 cells of 80×110. Idle and jump frames exist on the sheet. **Use only if R4 is picked.**
+
 ## Prototype (have — mechanics reference only)
 
 | File | Role |
