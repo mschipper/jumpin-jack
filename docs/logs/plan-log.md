@@ -64,6 +64,11 @@ Mike locked Sod pads. Wants header/timer closer to A. Three HUD options on C sky
 
 HUD locked to A Classic. Three ways to put numbers on sod pads: Manila tag, Face plate, Stamp. Each board shows whole `999,999`, decimal `0.89`/`0.9`, and stacked `3/4` vs `2/3`. Waiting on a number-treatment pick before menus and results.
 
+## 2026-09-14 — Menu styles
+
+Manila tag locked. Three menus in the locked world: One card, Toy buttons, Tag board. Robot waits on the ground. Waiting on a menu pick, then end-of-game screens.
+
+
 
 
 
