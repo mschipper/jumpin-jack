@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0b1a3a" />
+  <title>Greater Heights</title>
+  <style>
+    :root {
+      --accent: #ffd166;
+      --good: #06d6a0;
+      --bad: #ef476f;
+      --ink: #0b1a3a;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; height: 100%;
+      font-family: "Trebuchet MS", "Avenir Next", system-ui, sans-serif;
+      background: #06101f;
+      color: #fff;
+      overflow: hidden;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    #sky {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #071428 0%, #1d4e89 38%, #6eb5d6 68%, #b7d98a 100%);
+      transition: background 0.8s ease;
+    }
+    #stars {
+      position: absolute; inset: 0; pointer-events: none; opacity: .4;
+      background-image:
+        radial-gradient(2px 2px at 18% 12%, #fff, transparent),
+        radial-gradient(1px 1px at 72% 22%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 42% 6%, #fff, transparent),
+        radial-gradient(1px 1px at 88% 10%, #fff, transparent),
+        radial-gradient(1px 1px at 12% 36%, #fff, transparent);
+    }
+    #stage {
+      position: absolute; inset: 0;
+      overflow: hidden;
+    }
+    #world {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 100%;
+      will-change: transform;
+    }
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,.5);
+      border-radius: 40px;
+      pointer-events: none;
+    }
+    header.hud {
+      position: absolute; top: 0; left: 0; right: 0;
+      z-index: 30;
+      padding: calc(10px + env(safe-area-inset-top)) 14px 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(180deg, rgba(6,16,31,.7), transparent);
+      pointer-events: none;
+    }
+    .pill {
+      background: rgba(6,16,31,.55);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 15px;
+      backdrop-filter: blur(8px);
+    }
+    .pill span { color: var(--accent); }
+    #timerWrap {
+      position: absolute; top: calc(52px + env(safe-area-inset-top));
+      left: 16px; right: 16px; z-index: 30;
+      height: 8px;
+      background: rgba(0,0,0,.28);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #timerBar {
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, var(--good), var(--accent));
+      transform-origin: left;
+    }
+    #timerBar.warn { background: linear-gradient(90deg, #ffd166, #ef476f); }
+    #hint {
+      position: absolute;
+      top: calc(68px + env(safe-area-inset-top));
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.88);
+      text-shadow: 0 1px 4px rgba(0,0,0,.45);
+      z-index: 30;
+      pointer-events: none;
+    }
+    .plat {
+      position: absolute;
+      width: 42%;
+      height: 72px;
+      border-radius: 16px 16px 10px 10px;
+      background: linear-gradient(180deg, #c08457 0%, #8b5a2b 55%, #5c3a1a 100%);
+      box-shadow: 0 8px 0 #3d2410, 0 14px 20px rgba(0,0,0,.28);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 8;
+    }
+    .plat.start-pad {
+      width: 46%;
+      left: 27%;
+      cursor: default;
+    }
+    .plat::before {
+      content: "";
+      position: absolute; top: -10px; left: 8%; right: 8%; height: 16px;
+      background: #6aaa3a;
+      border-radius: 8px 8px 2px 2px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.25);
+    }
+    .plat .num {
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff8e7;
+      text-shadow: 0 2px 0 rgba(0,0,0,.35);
+      margin-top: 6px;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+    .plat.shake {
+      animation: platShake 0.18s linear infinite;
+    }
+    @keyframes platShake {
+      0% { transform: translate(0, 0) rotate(0); }
+      25% { transform: translate(-2px, -1px) rotate(-0.6deg); }
+      50% { transform: translate(2px, 1px) rotate(0.6deg); }
+      75% { transform: translate(-1px, 1px) rotate(-0.3deg); }
+      100% { transform: translate(0, 0) rotate(0); }
+    }
+    .plat.crumble {
+      animation: crumble .45s ease forwards;
+      pointer-events: none;
+    }
+    @keyframes crumble {
+      0% { transform: rotate(0) translateY(0); opacity: 1; }
+      100% { transform: rotate(16deg) translateY(110px); opacity: 0; }
+    }
+    .plat.vanish {
+      animation: vanish .22s ease forwards;
+      pointer-events: none;
+    }
+    @keyframes vanish {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.86); }
+    }
+    .plat.landed {
+      filter: brightness(1.12);
+    }
+    #hero {
+      position: absolute;
+      width: 52px; height: 70px;
+      z-index: 12;
+      pointer-events: none;
+      transform: translate(-50%, -100%);
+    }
+    #hero .body {
+      width: 36px; height: 28px;
+      background: #ef476f;
+      border-radius: 10px 10px 8px 8px;
+      margin: 22px auto 0;
+      position: relative;
+      box-shadow: 0 4px 0 #9b2244;
+    }
+    #hero .head {
+      width: 26px; height: 26px;
+      background: #ffd7ae;
+      border-radius: 50%;
+      position: absolute; top: -18px; left: 5px;
+    }
+    #hero .head::after {
+      content: "";
+      position: absolute; top: -6px; left: 2px;
+      width: 22px; height: 12px;
+      background: #1d3557;
+      border-radius: 10px 10px 2px 2px;
+    }
+    #hero .eye {
+      position: absolute; top: 10px; width: 4px; height: 5px;
+      background: #1d3557; border-radius: 50%;
+    }
+    #hero .eye.l { left: 6px; }
+    #hero .eye.r { right: 6px; }
+    #hero .leg {
+      position: absolute; bottom: -10px; width: 8px; height: 14px;
+      background: #1d3557; border-radius: 3px;
+    }
+    #hero .leg.l { left: 8px; }
+    #hero .leg.r { right: 8px; }
+    #hero.jumping .body { transform: rotate(-8deg); }
+    #hero.jumping .leg.l { transform: rotate(-28deg); }
+    #hero.jumping .leg.r { transform: rotate(28deg); }
+    #ground {
+      position: absolute; left: 0; right: 0; height: 140px;
+      background: linear-gradient(180deg, #6aaa3a 0%, #3d6b1e 38%, #2a4a14 100%);
+      z-index: 4;
+    }
+    #ground::before {
+      content: "";
+      position: absolute; top: -14px; left: 0; right: 0; height: 18px;
+      background:
+        radial-gradient(circle at 10% 100%, #6aaa3a 12px, transparent 13px),
+        radial-gradient(circle at 30% 100%, #6aaa3a 10px, transparent 11px),
+        radial-gradient(circle at 55% 100%, #6aaa3a 14px, transparent 15px),
+        radial-gradient(circle at 78% 100%, #6aaa3a 11px, transparent 12px),
+        radial-gradient(circle at 94% 100%, #6aaa3a 13px, transparent 14px);
+    }
+    #combo {
+      position: absolute;
+      left: 50%; top: 36%;
+      transform: translate(-50%, -50%);
+      font-size: 28px; font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 2px 8px rgba(0,0,0,.45);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 25;
+    }
+    #combo.show { animation: pop .7s ease forwards; }
+    @keyframes pop {
+      0% { opacity: 0; transform: translate(-50%, -40%) scale(.6); }
+      30% { opacity: 1; transform: translate(-50%, -70%) scale(1.12); }
+      100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
+    }
+    .overlay {
+      position: absolute; inset: 0; z-index: 40;
+      background: rgba(6,16,31,.74);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 28px 22px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+    .overlay h1 {
+      font-size: 42px; margin: 0 0 6px;
+      color: var(--accent);
+      text-shadow: 0 3px 0 #9b6b12;
+    }
+    .overlay p { margin: 8px 0; line-height: 1.45; color: #e8f1ff; max-width: 340px; }
+    .overlay .sub { opacity: .8; font-size: 14px; }
+    button.cta {
+      margin-top: 18px;
+      background: var(--accent);
+      color: var(--ink);
+      border: none;
+      font-weight: 800;
+      font-size: 18px;
+      padding: 14px 36px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #b88916;
+    }
+    button.cta:active { transform: translateY(3px); box-shadow: 0 2px 0 #b88916; }
+    .modes { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
+    .modes button {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .modes button.on { background: var(--good); color: #063; border-color: transparent; font-weight: 700; }
+    footer.note {
+      position: absolute; bottom: 12px; left: 0; right: 0;
+      font-size: 11px; opacity: .55;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sky"><div id="stars"></div></div>
+    <div id="stage">
+      <div id="world">
+        <div id="ground"></div>
+      </div>
+      <div id="hero">
+        <div class="body">
+          <div class="head">
+            <div class="eye l"></div>
+            <div class="eye r"></div>
+          </div>
+          <div class="leg l"></div>
+          <div class="leg r"></div>
+        </div>
+      </div>
+    </div>
+    <header class="hud">
+      <div class="pill">Score <span id="scoreEl">0</span></div>
+      <div class="pill">Lv <span id="levelEl">1</span></div>
+      <div class="pill">Best <span id="bestEl">0</span></div>
+    </header>
+    <div id="timerWrap"><div id="timerBar"></div></div>
+    <div id="hint">JUMP TO THE BIGGER NUMBER</div>
+    <div id="combo"></div>
+
+    <div class="overlay" id="startOverlay">
+      <h1>Greater Heights</h1>
+      <p>Two platforms. Jump to the bigger number before it crumbles.</p>
+      <p class="sub">Level up every 20 platforms. Timer gets tighter each level.</p>
+      <div class="modes">
+        <button data-mode="kids" class="on">Warm-up</button>
+        <button data-mode="class">Close calls</button>
+        <button data-mode="climb">Speed climb</button>
+      </div>
+      <button class="cta" id="playBtn">Start Climb</button>
+      <footer class="note">Tap a platform · arrows / A D also work</footer>
+    </div>
+
+    <div class="overlay" id="endOverlay" style="display:none">
+      <h1 id="endTitle">You fell!</h1>
+      <p id="endMsg"></p>
+      <button class="cta" id="againBtn">Climb again</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  const app = document.getElementById("app");
+  const world = document.getElementById("world");
+  const hero = document.getElementById("hero");
+  const ground = document.getElementById("ground");
+  const scoreEl = document.getElementById("scoreEl");
+  const bestEl = document.getElementById("bestEl");
+  const levelEl = document.getElementById("levelEl");
+  const timerBar = document.getElementById("timerBar");
+  const hint = document.getElementById("hint");
+  const comboEl = document.getElementById("combo");
+  const startOverlay = document.getElementById("startOverlay");
+  const endOverlay = document.getElementById("endOverlay");
+  const endTitle = document.getElementById("endTitle");
+  const endMsg = document.getElementById("endMsg");
+  const sky = document.getElementById("sky");
+
+  const BEST_KEY = "greater-heights-best";
+  bestEl.textContent = localStorage.getItem(BEST_KEY) || 0;
+
+  const STEP = 168;          // vertical gap between floors (px)
+  const REST_Y = 0.22;       // hero rest position as fraction of screen from bottom
+  const FLOORS_PER_LEVEL = 20;
+
+  let mode = "kids";
+  let playing = false;
+  let busy = false;
+  let score = 0;
+  let streak = 0;
+  let floor = 0;
+  let level = 1;
+  let camera = 0;            // world units scrolled up
+  let cameraTarget = 0;
+  let heroX = 0.5;           // 0–1 across stage
+  let heroWorldY = 140;      // px from world bottom (standing on ground)
+  let jump = null;
+  let leftPlat = null;
+  let rightPlat = null;
+  let currentPlat = null;
+  let bigger = "left";
+  let deadline = 0;
+  let duration = 4000;
+  let raf = null;
+  let lastTs = 0;
+  let falling = false;
+  let fallVY = 0;
+  let failTitle = "You fell!";
+  let onBreak = false;
+
+  document.querySelectorAll(".modes button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".modes button").forEach(b => b.classList.remove("on"));
+      btn.classList.add("on");
+      mode = btn.dataset.mode;
+    });
+  });
+  document.getElementById("playBtn").addEventListener("click", startGame);
+  document.getElementById("againBtn").addEventListener("click", () => {
+    endOverlay.style.display = "none";
+    startOverlay.style.display = "flex";
+  });
+
+  function stageSize() {
+    const r = app.getBoundingClientRect();
+    return { w: r.width, h: r.height };
+  }
+
+  function startGame() {
+    startOverlay.style.display = "none";
+    endOverlay.style.display = "none";
+    world.querySelectorAll(".plat, .cloud").forEach(el => el.remove());
+    score = 0; streak = 0; floor = 0; level = 1;
+    camera = 0; cameraTarget = 0;
+    falling = false; fallVY = 0; jump = null; busy = false; onBreak = false;
+    scoreEl.textContent = "0";
+    levelEl.textContent = "1";
+    hint.textContent = "JUMP TO THE BIGGER NUMBER";
+    hero.classList.remove("jumping");
+    sky.style.filter = "";
+
+    const { h } = stageSize();
+    ground.style.bottom = "0px";
+    ground.style.height = "140px";
+
+    // starting pad on the ground
+    currentPlat = makePlat(null, 0.5, 140, true);
+    heroX = 0.5;
+    heroWorldY = 140;
+    playing = true;
+    lastTs = performance.now();
+    spawnChoice(140 + STEP);
+    placeHero();
+    applyCamera();
+    loop(lastTs);
+  }
+
+  function rangeForFloor() {
+    // Always 4-digit numbers. Modes change how close the pair is.
+    return { min: 1000, max: 9999 };
+  }
+
+  function pickPair() {
+    const r = rangeForFloor();
+    let a = rand(r.min, r.max);
+    let closeness;
+    if (mode === "kids") {
+      closeness = level === 1 ? (floor < 8 ? "far" : "hundreds")
+        : level === 2 ? "hundreds"
+        : level === 3 ? "tens" : "ones";
+    } else if (mode === "class") {
+      closeness = level === 1 ? "hundreds" : level === 2 ? "tens" : "ones";
+    } else {
+      closeness = level === 1 ? (floor < 6 ? "far" : "hundreds")
+        : level === 2 ? "tens" : "ones";
+    }
+
+    let b;
+    if (closeness === "far") {
+      b = rand(r.min, r.max);
+      if (Math.abs(a - b) < 400) b = Math.max(r.min, Math.min(r.max, a + (a < 5500 ? 800 : -800)));
+    } else if (closeness === "hundreds") {
+      const d = rand(1, 4) * 100 * (Math.random() < 0.5 ? 1 : -1);
+      b = clamp4(a + d);
+    } else if (closeness === "tens") {
+      const d = rand(1, 9) * 10 * (Math.random() < 0.5 ? 1 : -1);
+      b = clamp4(a + d);
+    } else {
+      const d = rand(1, 9) * (Math.random() < 0.5 ? 1 : -1);
+      b = clamp4(a + d);
+    }
+    if (b === a) b = clamp4(a + 1);
+    return [a, b];
+  }
+
+  function clamp4(n) {
+    return Math.max(1000, Math.min(9999, n));
+  }
+
+  function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function timeForFloor() {
+    const base = mode === "kids" ? 4800 : mode === "class" ? 4000 : 3800;
+    const minT = mode === "kids" ? 2400 : 1600;
+    return Math.max(minT, base - (level - 1) * 450 - (floor % FLOORS_PER_LEVEL) * 20);
+  }
+
+  function makePlat(num, xFrac, worldY, isStart) {
+    const el = document.createElement(isStart ? "div" : "button");
+    el.className = "plat" + (isStart ? " start-pad" : "");
+    if (!isStart) el.type = "button";
+    el.style.left = (xFrac * 100) + "%";
+    el.style.marginLeft = isStart ? "0" : "-21%";
+    if (isStart) {
+      el.style.left = "27%";
+      el.style.marginLeft = "0";
+    }
+    el.style.bottom = worldY + "px";
+    el.dataset.worldY = String(worldY);
+    el.dataset.x = String(xFrac);
+    if (num != null) el.innerHTML = `<div class="num">${num}</div>`;
+    world.appendChild(el);
+    return el;
+  }
+
+  function spawnChoice(worldY, paused) {
+    const [a, b] = pickPair();
+    bigger = a > b ? "left" : "right";
+    leftPlat = makePlat(a, 0.27, worldY, false);
+    rightPlat = makePlat(b, 0.73, worldY, false);
+    leftPlat.dataset.side = "left";
+    rightPlat.dataset.side = "right";
+    leftPlat.addEventListener("click", () => choose("left"));
+    rightPlat.addEventListener("click", () => choose("right"));
+
+    duration = timeForFloor();
+    timerBar.classList.remove("warn");
+    if (paused) {
+      onBreak = true;
+      deadline = Infinity;
+      timerBar.style.transform = "scaleX(1)";
+    } else {
+      onBreak = false;
+      deadline = performance.now() + duration;
+      if (currentPlat) {
+        currentPlat.dataset.dropAt = String(deadline);
+        currentPlat.dataset.shakeAt = String(deadline - duration * 0.28);
+      }
+    }
+
+    maybeCloud(worldY + 80);
+    maybeCloud(worldY + 40);
+  }
+
+  function maybeCloud(worldY) {
+    if (Math.random() > 0.55) return;
+    const c = document.createElement("div");
+    c.className = "cloud";
+    const w = 70 + Math.random() * 90;
+    c.style.width = w + "px";
+    c.style.height = (16 + Math.random() * 18) + "px";
+    c.style.left = (8 + Math.random() * 70) + "%";
+    c.style.bottom = worldY + "px";
+    c.style.opacity = 0.28 + Math.random() * 0.3;
+    world.appendChild(c);
+  }
+
+  function choose(side) {
+    if (!playing || busy || falling) return;
+    const target = side === "left" ? leftPlat : rightPlat;
+    const other = side === "left" ? rightPlat : leftPlat;
+    if (!target) return;
+
+    const correct = side === bigger;
+    other.classList.add("vanish");
+    if (!correct) {
+      target.classList.add("vanish");
+      failTitle = "Wrong jump!";
+      startFall();
+      return;
+    }
+
+    busy = true;
+    target.classList.add("landed");
+    const destX = Number(target.dataset.x);
+    const destY = Number(target.dataset.worldY);
+    startJump(destX, destY, () => {
+      floor++;
+      streak++;
+      score += 1 + Math.floor(streak / 3) + (level - 1);
+      scoreEl.textContent = score;
+
+      const newLevel = Math.floor(floor / FLOORS_PER_LEVEL) + 1;
+      let pauseNext = false;
+      if (newLevel > level) {
+        level = newLevel;
+        levelEl.textContent = String(level);
+        comboEl.textContent = "LEVEL " + level + "!";
+        comboEl.classList.remove("show");
+        void comboEl.offsetWidth;
+        comboEl.classList.add("show");
+        hint.textContent = "LEVEL " + level + " · JUMP WHEN READY";
+        pauseNext = true;
+        if (level >= 3) sky.style.filter = "saturate(0.92) brightness(0.82)";
+        else if (level >= 2) sky.style.filter = "saturate(1.05) brightness(0.92)";
+      } else if (streak >= 3 && streak % 3 === 0) {
+        comboEl.textContent = streak + " STREAK!";
+        comboEl.classList.remove("show");
+        void comboEl.offsetWidth;
+        comboEl.classList.add("show");
+      }
+
+      currentPlat = target;
+      spawnChoice(destY + STEP, pauseNext);
+      if (!pauseNext && hint.textContent.indexOf("JUMP WHEN READY") !== -1) {
+        hint.textContent = "JUMP TO THE BIGGER NUMBER";
+      }
+
+      busy = false;
+    });
+  }
+
+  function startJump(toX, toY, onLand) {
+    const fromX = heroX;
+    const fromY = heroWorldY;
+    jump = {
+      fromX, fromY, toX, toY,
+      t: 0,
+      dur: 0.48,
+      onLand
+    };
+    hero.classList.add("jumping");
+    const { h } = stageSize();
+    cameraTarget = toY - h * REST_Y;
+  }
+
+  function startFall() {
+    busy = true;
+    falling = true;
+    fallVY = 220;
+    hero.classList.add("jumping");
+    playing = false;
+    setTimeout(() => finishFail(failTitle), 720);
+  }
+
+  function finishFail(title) {
+    cancelAnimationFrame(raf);
+    const best = Number(localStorage.getItem(BEST_KEY) || 0);
+    if (score > best) localStorage.setItem(BEST_KEY, String(score));
+    bestEl.textContent = localStorage.getItem(BEST_KEY);
+    endTitle.textContent = title;
+    endMsg.textContent = `Level ${level} · ${floor} platforms · score ${score}` +
+      (streak >= 3 ? ` · best streak ${streak}` : "") + ".";
+    endOverlay.style.display = "flex";
+    busy = false;
+  }
+
+  function placeHero() {
+    const { w, h } = stageSize();
+    const screenY = heroWorldY - camera;
+    hero.style.left = (heroX * w) + "px";
+    hero.style.bottom = screenY + "px";
+  }
+
+  function applyCamera() {
+    world.style.transform = `translateY(${camera}px)`;
+  }
+
+  function easeInOut(t) {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  }
+
+  function loop(now) {
+    const dt = Math.min(0.05, (now - lastTs) / 1000);
+    lastTs = now;
+
+    if (jump) {
+      jump.t += dt / jump.dur;
+      const p = Math.min(1, jump.t);
+      const e = easeInOut(p);
+      heroX = jump.fromX + (jump.toX - jump.fromX) * e;
+      const baseY = jump.fromY + (jump.toY - jump.fromY) * e;
+      const arc = Math.sin(p * Math.PI) * 90;
+      heroWorldY = baseY + arc;
+      if (p >= 1) {
+        heroX = jump.toX;
+        heroWorldY = jump.toY;
+        hero.classList.remove("jumping");
+        const cb = jump.onLand;
+        jump = null;
+        if (cb) cb();
+      }
+    }
+
+    if (falling) {
+      fallVY -= 900 * dt;
+      heroWorldY += fallVY * dt;
+      heroX += 0.15 * dt * (heroX > 0.5 ? 1 : -1);
+    }
+
+    // smooth camera follow
+    const camErr = cameraTarget - camera;
+    camera += camErr * Math.min(1, dt * 6);
+
+    if (playing && !busy && !jump && !onBreak) {
+      const left = deadline - now;
+      const pct = Math.max(0, left / duration);
+      timerBar.style.transform = `scaleX(${pct})`;
+      if (pct < 0.28) timerBar.classList.add("warn");
+    }
+
+    world.querySelectorAll(".plat").forEach(p => {
+      if (p.classList.contains("crumble") || p.classList.contains("vanish")) return;
+      const dropAt = Number(p.dataset.dropAt || 0);
+      if (!dropAt) return;
+      const shakeAt = Number(p.dataset.shakeAt || dropAt);
+      if (now >= dropAt) {
+        p.classList.remove("shake");
+        p.classList.add("crumble");
+        if (playing && !falling && p === currentPlat) {
+          failTitle = "The platform gave way!";
+          startFall();
+        }
+      } else if (now >= shakeAt) {
+        p.classList.add("shake");
+      }
+    });
+
+    placeHero();
+    applyCamera();
+    raf = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (!playing) {
+      if ((e.key === "Enter" || e.key === " ") && startOverlay.style.display !== "none") startGame();
+      return;
+    }
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") choose("left");
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") choose("right");
+  });
+
+  window.addEventListener("resize", () => {
+    if (!playing) return;
+    const { h } = stageSize();
+    if (currentPlat) {
+      cameraTarget = Number(currentPlat.dataset.worldY) - h * REST_Y;
+    }
+    placeHero();
+  });
+})();
+</script>
+</body>
+</html>
