@@ -80,6 +80,11 @@ End overlay = Report card. Extra Phase 1 ask: three Imagine cut-paper robot opti
 
 Imagine stills + video harvest for Paper Stack, Kite Bot, Can Bot (idle bob and jump). Mike added `reference assets/adventurer_tilesheet.png` (Kenney-style 80×110, 9×3). Sliced idle (`0,0` + `1,8`) and jump (`1,0` duck, `0,4` air, `2,2` kick) into sheets. In-game composites on C+Sod+A HUD. Wrote `docs/visual-direction.md` with everything locked except the character pick. Paper cutouts vs cobalt sky eat navy helmet/shadow — stills are the clean R1–R3 look.
 
+## 2026-09-14 — Robot vs Adventurer composite
+
+Mike asked to compare the original Foozle robot with the adventurer tilesheet (not Imagine) on the locked layout. Both stand on the two sod pads, labeled. `char-compare-mobile.png` / `char-compare-desktop.png`.
+
+
 
 
 
