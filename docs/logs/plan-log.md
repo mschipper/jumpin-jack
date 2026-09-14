@@ -20,3 +20,10 @@ Robot Idle/Jump are 21-frame 5×5 grids. `RobotSpriteSheets/` hashes match the F
 ## 2026-09-14 — Wrote asset map
 
 Added `docs/asset-map.md` and a short `README.md` stub. No art generated. No audio converted.
+
+## 2026-09-14 — GitHub repo live
+
+Initialized git on `main`, remote `https://github.com/mschipper/jumpin-jack.git`. First commit `4cc622f` (166 files: prototype, Foozle pack, production audio, reference audio, asset map). Pushed to `origin/main`. Repo is public.
+
+Phase 0 code/docs work is done. Waiting on Mike to agree the missing-vs-have list in `docs/asset-map.md` before Phase 1 mockups.
+
