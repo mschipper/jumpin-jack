@@ -1,0 +1,115 @@
+/* C-world platform variants. Numbers are tags ON the pad face.
+   Selectors must beat body.theme-c .plat / .plat::before from theme-c.css. */
+
+body.theme-c .plat .num {
+  top: auto;
+  bottom: 8px;
+  padding: 6px 14px 7px;
+  font-size: 24px;
+  z-index: 11;
+  transform: translateX(-50%) rotate(-1.2deg);
+}
+body.theme-c .plat.right .num {
+  transform: translateX(-50%) rotate(1.2deg);
+}
+body.theme-c .plat .num::before {
+  top: -6px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+}
+
+/* 1 · Sod — kraft dirt, scalloped grass, tag on the soil face */
+body.theme-c .plat.sod {
+  height: 62px;
+  background: linear-gradient(180deg, #c9a066 0%, #a67c43 55%, #8a6232 100%);
+  border-radius: 10px 10px 6px 6px;
+  box-shadow: 7px 8px 0 #16324f;
+}
+body.theme-c .plat.sod::before {
+  content: "";
+  position: absolute;
+  top: -14px; left: -2px; right: -2px;
+  height: 22px;
+  background:
+    radial-gradient(circle at 10% 100%, #6fbf3b 10px, transparent 11px),
+    radial-gradient(circle at 30% 100%, #62b332 12px, transparent 13px),
+    radial-gradient(circle at 52% 100%, #78c94a 11px, transparent 12px),
+    radial-gradient(circle at 74% 100%, #5eaa30 12px, transparent 13px),
+    radial-gradient(circle at 92% 100%, #6fbf3b 10px, transparent 11px),
+    linear-gradient(#6fbf3b, #4e9a28);
+  background-repeat: no-repeat;
+  border-radius: 12px 12px 0 0;
+  box-shadow: none;
+  opacity: 1;
+}
+body.theme-c .plat.sod .num {
+  background: #f3e2b8;
+  color: #16324f;
+}
+
+/* 2 · Carton — corrugated kraft box, packing-tape band, tag stuck on */
+body.theme-c .plat.carton {
+  height: 64px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #d4a96a 0 8px,
+      #c89855 8px 9px,
+      #d4a96a 9px 17px
+    );
+  border-radius: 4px;
+  box-shadow: 7px 8px 0 #16324f;
+}
+body.theme-c .plat.carton::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 22px;
+  height: 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #e8d9a0 0 8px,
+    #d7c27a 8px 16px
+  );
+  opacity: .95;
+  box-shadow: inset 0 0 0 1px rgba(22,50,79,.15);
+  border-radius: 0;
+}
+body.theme-c .plat.carton .num {
+  background: #fffdf6;
+  color: #16324f;
+  border-radius: 2px;
+}
+
+/* 3 · Puff — paper cloud you stand on, tag clipped to the front */
+body.theme-c .plat.puff {
+  height: 58px;
+  background: #fffdf6;
+  border-radius: 40px 40px 28px 28px;
+  box-shadow: 7px 8px 0 #16324f;
+  overflow: visible;
+  z-index: 8;
+}
+body.theme-c .plat.puff::before,
+body.theme-c .plat.puff::after {
+  content: "";
+  position: absolute;
+  background: #fffdf6;
+  border-radius: 50%;
+  box-shadow: 7px 8px 0 #16324f;
+  opacity: 1;
+}
+body.theme-c .plat.puff::before {
+  width: 48px; height: 48px;
+  left: 10px; top: -18px;
+}
+body.theme-c .plat.puff::after {
+  width: 56px; height: 56px;
+  right: 14px; top: -22px;
+}
+body.theme-c .plat.puff .num {
+  background: #f3e2b8;
+  color: #16324f;
+  bottom: 10px;
+}

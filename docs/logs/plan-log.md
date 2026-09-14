@@ -42,5 +42,21 @@ Then wait for Mike to pick before platform / menu / end-screen rounds.
 
 Built HTML/CSS mockups (not Imagine) so HUD copy and numbers stay exact. Screenshots at 2× in `docs/mockups/phase1-overall/`. Three directions: Toybox Sky, Cloud Deck, Cut-paper Kite. Desktop uses a centered 420px play column with extra sky; mobile is the column only. Tightened Cut-paper hint outline after the first shot muddied "NUMBER". Waiting on a pick before the platform-number round.
 
+## 2026-09-14 — Overall look feedback
+
+Mike likes **C · Cut-paper Kite** overall, not the kite-stripe platforms. Numbers should be a tag **on** the platform, not hanging below. Next: three new platform styles in the C world, tags on the pad face.
+
+## 2026-09-14 — C-world platform styles
+
+Locked C sky/HUD. Numbers are pinned tags on the pad face. Three pad styles in `docs/mockups/phase1-overall/c-{sod,carton,puff}-*.png`:
+
+1. Sod — kraft dirt + scalloped grass
+2. Carton — corrugated kraft + packing tape
+3. Puff — paper cloud you stand on
+
+Waiting on a pad pick before menu and results rounds.
+
+
+
 
 
