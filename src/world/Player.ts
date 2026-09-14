@@ -30,13 +30,12 @@ export class Player {
     this.shadow.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     if (!scene.anims.exists("idle")) {
+      // Frame 0 is the standing idle. Do not ping-pong other cells — they
+      // sit higher in the 80×110 box and read as a hop.
       scene.anims.create({
         key: "idle",
-        frames: [
-          { key: "adventurer", frame: 0 },
-          { key: "adventurer", frame: 17 },
-        ],
-        frameRate: 2,
+        frames: [{ key: "adventurer", frame: 0 }],
+        frameRate: 1,
         repeat: -1,
       });
       scene.anims.create({
@@ -45,7 +44,6 @@ export class Player {
           { key: "adventurer", frame: 9 },
           { key: "adventurer", frame: 4 },
           { key: "adventurer", frame: 20 },
-          { key: "adventurer", frame: 4 },
         ],
         frameRate: 8,
         repeat: 0,
@@ -55,8 +53,10 @@ export class Player {
   }
 
   idle(): void {
-    this.sprite.play("idle", true);
-    this.shadow.play("idle", true);
+    this.sprite.anims.stop();
+    this.shadow.anims.stop();
+    this.sprite.setFrame(0);
+    this.shadow.setFrame(0);
   }
 
   jump(): void {

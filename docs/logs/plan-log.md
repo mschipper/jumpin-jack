@@ -115,6 +115,10 @@ Planned steps:
 
 Deleted `docs/mockups/`. Vite + Phaser 4 + Vitest scaffold. Whole-number generator, config parse, timers, per-config best keys (17 tests). Toy-button menu, Challenge climb with sod pads + manila tags, Adventurer + runtime drop-shadow sprite, pause (hides/regenerates numbers), report-card results. `scene.switch` from preload to climb (start was a no-op while preload was still creating). Decimal/fraction still use the whole generator until Phase 3.
 
+## 2026-09-14 — Idle + click fixes
+
+Idle was ping-ponging sheet frame 17 (different vertical crop) so the adventurer looked like he was hopping. Idle is now the standing cell only. Clicks missed pads because Phaser 4 containers don't take a hit area the way Phaser 3 did, and the hidden pause overlay still had interactive children. Pads now use a Zone; pause disables input when hidden; pointerup also tests pad bounds.
+
 
 
 

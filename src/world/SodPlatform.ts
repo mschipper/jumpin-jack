@@ -19,6 +19,7 @@ export class SodPlatform {
   private tagText: Phaser.GameObjects.Text;
   private tagBg: Phaser.GameObjects.Rectangle;
   private tagPin: Phaser.GameObjects.Arc;
+  readonly hit: Phaser.GameObjects.Zone;
   private shakeTween?: Phaser.Tweens.Tween;
 
   constructor(
@@ -58,20 +59,22 @@ export class SodPlatform {
 
     const shadow = scene.add.rectangle(6, GRASS_H + DIRT_H / 2 + 6, W, DIRT_H + 4, NAVY, 1);
 
+    const hitH = GRASS_H + DIRT_H;
+    this.hit = scene.add.zone(0, hitH / 2, W, hitH);
+    this.hit.setOrigin(0.5, 0.5);
+
     this.container = scene.add.container(x, worldY, [
       shadow,
       g,
       this.tagBg,
       this.tagPin,
       this.tagText,
+      this.hit,
     ]);
     this.container.setDepth(8);
-    this.container.setSize(W, DIRT_H + GRASS_H);
+    this.container.setSize(W, hitH);
     if (value) {
-      this.container.setInteractive(
-        new Phaser.Geom.Rectangle(-W / 2, 0, W, DIRT_H + GRASS_H),
-        Phaser.Geom.Rectangle.Contains,
-      );
+      this.hit.setInteractive({ useHandCursor: true });
     }
     this.setTagVisible(Boolean(value));
   }
@@ -111,7 +114,7 @@ export class SodPlatform {
     if (this.gone) return;
     this.gone = true;
     this.shakeTween?.stop();
-    this.container.disableInteractive();
+    this.hit.disableInteractive();
     scene.tweens.add({
       targets: this.container,
       alpha: 0,
@@ -125,7 +128,7 @@ export class SodPlatform {
     if (this.gone) return;
     this.gone = true;
     this.shakeTween?.stop();
-    this.container.disableInteractive();
+    this.hit.disableInteractive();
     scene.tweens.add({
       targets: this.container,
       y: this.container.y + 110,

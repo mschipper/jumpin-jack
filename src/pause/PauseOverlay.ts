@@ -41,15 +41,26 @@ export class PauseOverlay {
     this.root = scene.add.container(columnLeft(scene), 0, [veil, card, title, resume, resumeT, quit]);
     this.root.setScrollFactor(0);
     this.root.setDepth(50);
-    this.root.setVisible(false);
+    this.resumeBtn = resume;
+    this.quitBtn = quit;
+    this.hide();
   }
+
+  private resumeBtn: Phaser.GameObjects.Rectangle;
+  private quitBtn: Phaser.GameObjects.Text;
 
   show(): void {
     this.root.setVisible(true);
+    this.root.setActive(true);
+    this.resumeBtn.setInteractive({ useHandCursor: true });
+    this.quitBtn.setInteractive({ useHandCursor: true });
   }
 
   hide(): void {
     this.root.setVisible(false);
+    this.root.setActive(false);
+    this.resumeBtn.disableInteractive();
+    this.quitBtn.disableInteractive();
   }
 
   layout(scene: Phaser.Scene): void {

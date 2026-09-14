@@ -90,6 +90,7 @@ export class PlayScene extends Phaser.Scene {
     this.hud.setTimer(1, this.config.mode);
 
     this.input.keyboard?.on("keydown", (e: KeyboardEvent) => this.onKey(e));
+    this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => this.onPointer(pointer));
     this.scale.on("resize", () => this.onResize());
     hostEvents(this).emit("game_start", { ...this.config });
   }
@@ -162,8 +163,8 @@ export class PlayScene extends Phaser.Scene {
     this.pair = pair;
     const left = new SodPlatform(this, columnX(this, 0.27), worldY, 0.27, pair.left);
     const right = new SodPlatform(this, columnX(this, 0.73), worldY, 0.73, pair.right);
-    left.container.on("pointerup", () => this.choose("left"));
-    right.container.on("pointerup", () => this.choose("right"));
+    left.hit.on("pointerup", () => this.choose("left"));
+    right.hit.on("pointerup", () => this.choose("right"));
     this.leftPlat = left;
     this.rightPlat = right;
     this.platforms.push(left, right);
@@ -190,6 +191,18 @@ export class PlayScene extends Phaser.Scene {
     }
   }
 
+  private onPointer(pointer: Phaser.Input.Pointer): void {
+    if (this.paused || this.busy || this.falling || this.jumping || !this.pair) return;
+    const pt = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    const over = (p: SodPlatform | null) => {
+      if (!p || p.gone) return false;
+      const b = p.hit.getBounds();
+      return Phaser.Geom.Rectangle.Contains(b, pt.x, pt.y);
+    };
+    if (over(this.leftPlat)) this.choose("left");
+    else if (over(this.rightPlat)) this.choose("right");
+  }
+
   private onKey(e: KeyboardEvent): void {
     if (e.key === "Escape") {
       this.togglePause();
@@ -205,6 +218,7 @@ export class PlayScene extends Phaser.Scene {
     const target = side === "left" ? this.leftPlat : this.rightPlat;
     const other = side === "left" ? this.rightPlat : this.leftPlat;
     if (!target || !other) return;
+    this.busy = true;
 
     const correct = side === this.pair.bigger;
     other.vanish(this);
@@ -214,7 +228,6 @@ export class PlayScene extends Phaser.Scene {
       return;
     }
 
-    this.busy = true;
     this.onBreak = false;
     const destX = columnX(this, target.xFrac);
     const destY = target.worldY;
