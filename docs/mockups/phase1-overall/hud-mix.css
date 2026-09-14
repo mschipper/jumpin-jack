@@ -1,0 +1,115 @@
+/* HUD variants on C + Sod. Beat body.theme-c rules. */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@800;900&display=swap");
+
+/* Shared: A-like type on the chrome */
+body.hud-a .pill,
+body.hud-chip .pill,
+body.hud-navy-stripe .pill {
+  font-family: "Nunito", "Trebuchet MS", sans-serif;
+}
+
+/* 1 · A Classic — navy pills, gold round pause, green-gold timer */
+body.hud-a .pill {
+  background: rgba(29, 53, 87, .72);
+  color: #fff8e7;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.28);
+  box-shadow: 0 3px 0 #12243c;
+}
+body.hud-a .pill b { color: #ffd166; }
+body.hud-a .pause {
+  background: #ffd166;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 #c49214;
+}
+body.hud-a .pause i { background: #1d3557; }
+body.hud-a .timer {
+  background: rgba(29,53,87,.28);
+  border-radius: 8px;
+  height: 10px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+}
+body.hud-a .timer i {
+  background: linear-gradient(90deg, #06d6a0, #ffd166);
+  border-radius: 8px;
+  width: 62%;
+}
+body.hud-a .hint {
+  font-family: "Fredoka", "Nunito", sans-serif;
+  color: #fff;
+  letter-spacing: 0.16em;
+  text-shadow: 0 2px 0 rgba(29,53,87,.35);
+  font-size: 12px;
+}
+
+/* 2 · Navy chips — A colors, C hard offset shadow */
+body.hud-chip .pill {
+  background: #1d3557;
+  color: #fff8e7;
+  border-radius: 8px;
+  border: 0;
+  box-shadow: 4px 5px 0 #0b1a2e;
+}
+body.hud-chip .pill b { color: #ffd166; }
+body.hud-chip .pause {
+  background: #ffd166;
+  border-radius: 8px;
+  box-shadow: 4px 5px 0 #0b1a2e;
+}
+body.hud-chip .pause i { background: #1d3557; }
+body.hud-chip .timer {
+  background: #0b1a2e;
+  border-radius: 6px;
+  height: 12px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.2);
+}
+body.hud-chip .timer i {
+  background: linear-gradient(90deg, #06d6a0, #ffd166);
+  border-radius: 6px;
+  width: 62%;
+}
+body.hud-chip .hint {
+  font-family: "Fredoka", "Nunito", sans-serif;
+  color: #fff8e7;
+  letter-spacing: 0.14em;
+  text-shadow: 2px 2px 0 #16324f;
+  font-size: 12px;
+}
+
+/* 3 · A pills + kite-stripe timer (C accent only on the clock) */
+body.hud-navy-stripe .pill {
+  background: rgba(29, 53, 87, .72);
+  color: #fff8e7;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.28);
+  box-shadow: 0 3px 0 #12243c;
+}
+body.hud-navy-stripe .pill b { color: #ffd166; }
+body.hud-navy-stripe .pause {
+  background: #ffd166;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 #c49214;
+}
+body.hud-navy-stripe .pause i { background: #1d3557; }
+body.hud-navy-stripe .timer {
+  background: #16324f;
+  border-radius: 3px;
+  height: 12px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.15);
+}
+body.hud-navy-stripe .timer i {
+  background: repeating-linear-gradient(
+    90deg,
+    #ffe66d 0 10px,
+    #ff6b6b 10px 20px
+  );
+  width: 62%;
+  border-radius: 0;
+}
+body.hud-navy-stripe .hint {
+  font-family: "Fredoka", "Nunito", sans-serif;
+  color: #fff;
+  letter-spacing: 0.16em;
+  text-shadow: 0 2px 0 rgba(29,53,87,.35);
+  font-size: 12px;
+}

@@ -56,6 +56,11 @@ Locked C sky/HUD. Numbers are pinned tags on the pad face. Three pad styles in `
 
 Waiting on a pad pick before menu and results rounds.
 
+## 2026-09-14 — HUD mix on C + Sod
+
+Mike locked Sod pads. Wants header/timer closer to A. Three HUD options on C sky + sod pads: A Classic (navy pills, gold round pause, green-gold bar), Navy chips (A colors + C offset shadow), A pills + kite-stripe timer. Waiting on a HUD pick.
+
+
 
 
 
