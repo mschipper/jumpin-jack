@@ -27,3 +27,20 @@ Initialized git on `main`, remote `https://github.com/mschipper/jumpin-jack.git`
 
 Phase 0 code/docs work is done. Waiting on Mike to agree the missing-vs-have list in `docs/asset-map.md` before Phase 1 mockups.
 
+## 2026-09-14 — Phase 1 start (overall look)
+
+Three overall-look directions as static screenshots of HTML mockups (exact HUD copy and numbers; Imagine would garble those). Desktop 16:9 and mobile 9:16 each.
+
+Directions:
+1. Toybox Sky — cartoon grass-capped pads, hanging wooden number signs
+2. Cloud Deck — pale sky, white decks, cyan eye-glow, glass number plates
+3. Cut-paper Kite — layered paper sky, kite-stripe pads, manila number tags
+
+Then wait for Mike to pick before platform / menu / end-screen rounds.
+
+## 2026-09-14 — Overall-look mockups
+
+Built HTML/CSS mockups (not Imagine) so HUD copy and numbers stay exact. Screenshots at 2× in `docs/mockups/phase1-overall/`. Three directions: Toybox Sky, Cloud Deck, Cut-paper Kite. Desktop uses a centered 420px play column with extra sky; mobile is the column only. Tightened Cut-paper hint outline after the first shot muddied "NUMBER". Waiting on a pick before the platform-number round.
+
+
+
