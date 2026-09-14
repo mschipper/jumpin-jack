@@ -92,6 +92,11 @@ Re-rendered the compare with a slight navy offset drop-shadow on the adventurer 
 
 Player = **Adventurer** (tilesheet + drop shadow). Full visual direction in `docs/visual-direction.md`. Phase 1 complete. Phase 2 (core loop: whole / normal / Challenge) waits on Mike.
 
+## 2026-09-14 — Drop shadow baked into adventurer sprites
+
+Navy `#16324F` @ 35%, offset 2px right / 4px down at 1×, scaled with nearest-neighbor. Applied to idle, jump, and both 8-frame sheets. Compare mockup uses the baked PNG (no CSS filter). Phase 2 atlas must keep this on every frame.
+
+
 
 
 

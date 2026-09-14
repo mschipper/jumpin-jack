@@ -12,3 +12,5 @@ Foozle cute robot doesn’t match the locked Cut-paper world. Four replacements:
 In-game composites: `docs/mockups/phase1-overall/char-r*-mobile.png`. Paper cutouts are approximate (navy helmet/shadow vs cobalt sky). Stills `r*-idle.jpg` are the clean look for R1–R3.
 
 Adventurer jump frames from the Kenney-style sheet: duck `1,0` → air `0,4` → kick `2,2`. Idle: `0,0` and `1,8`.
+
+**Drop shadow is baked into** `r4-adventurer-idle.png`, `r4-adventurer-jump.png`, and both sheets: navy `#16324F` @ 35%, offset 2×4 px at 1× (4×8 at 2×, 6×12 at 3× sheets). Phase 2 must keep this on every frame.
