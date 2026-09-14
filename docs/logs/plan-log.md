@@ -100,6 +100,21 @@ Navy `#16324F` @ 35%, offset 2px right / 4px down at 1×, scaled with nearest-ne
 
 Mike pushed back on modifying the spritesheet. Restored clean frames from `adventurer_tilesheet.png`. Shadow is a Phase 2 **runtime** effect (duplicate tinted sprite preferred; Phaser 4 `filters.internal.addShadow` as alt). Mockups preview it with CSS `drop-shadow`.
 
+## 2026-09-14 — Phase 2 start
+
+Scaffold Vite + Phaser 4 + TS + Vitest. Core loop: whole numbers, normal difficulty, Challenge mode. Adventurer with runtime drop shadow. Sod platforms + manila tags. Delete Phase 1 mockups per Mike.
+
+Planned steps:
+1. Delete `docs/mockups/`.
+2. Scaffold Vite/Phaser 4/Vitest.
+3. Host seam, config, numbers (whole), timers, best-score storage + tests.
+4. Scenes: menu (toy buttons), play, pause, results (report card).
+5. Verify tests/build, commit, push.
+
+## 2026-09-14 — Phase 2 playable
+
+Deleted `docs/mockups/`. Vite + Phaser 4 + Vitest scaffold. Whole-number generator, config parse, timers, per-config best keys (17 tests). Toy-button menu, Challenge climb with sod pads + manila tags, Adventurer + runtime drop-shadow sprite, pause (hides/regenerates numbers), report-card results. `scene.switch` from preload to climb (start was a no-op while preload was still creating). Decimal/fraction still use the whole generator until Phase 3.
+
 
 
 
