@@ -96,6 +96,10 @@ Player = **Adventurer** (tilesheet + drop shadow). Full visual direction in `doc
 
 Navy `#16324F` @ 35%, offset 2px right / 4px down at 1×, scaled with nearest-neighbor. Applied to idle, jump, and both 8-frame sheets. Compare mockup uses the baked PNG (no CSS filter). Phase 2 atlas must keep this on every frame.
 
+## 2026-09-14 — Un-bake adventurer shadow
+
+Mike pushed back on modifying the spritesheet. Restored clean frames from `adventurer_tilesheet.png`. Shadow is a Phase 2 **runtime** effect (duplicate tinted sprite preferred; Phaser 4 `filters.internal.addShadow` as alt). Mockups preview it with CSS `drop-shadow`.
+
 
 
 

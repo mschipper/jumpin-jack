@@ -13,4 +13,4 @@ In-game composites: `docs/mockups/phase1-overall/char-r*-mobile.png`. Paper cuto
 
 Adventurer jump frames from the Kenney-style sheet: duck `1,0` → air `0,4` → kick `2,2`. Idle: `0,0` and `1,8`.
 
-**Drop shadow is baked into** `r4-adventurer-idle.png`, `r4-adventurer-jump.png`, and both sheets: navy `#16324F` @ 35%, offset 2×4 px at 1× (4×8 at 2×, 6×12 at 3× sheets). Phase 2 must keep this on every frame.
+**Drop shadow is not baked.** Phase 2 applies it at runtime (duplicate sprite behind the player, or Phaser 4 `filters.internal.addShadow`). Mockups use a CSS `drop-shadow` to preview.
