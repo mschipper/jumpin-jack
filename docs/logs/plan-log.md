@@ -119,6 +119,10 @@ Deleted `docs/mockups/`. Vite + Phaser 4 + Vitest scaffold. Whole-number generat
 
 Idle was ping-ponging sheet frame 17 (different vertical crop) so the adventurer looked like he was hopping. Idle is now the standing cell only. Clicks missed pads because Phaser 4 containers don't take a hit area the way Phaser 3 did, and the hidden pause overlay still had interactive children. Pads now use a Zone; pause disables input when hidden; pointerup also tests pad bounds.
 
+## 2026-09-14 — Idle bob
+
+Sheet has no idle loop. Standing cell (frame 0) now has a 2px sine y-bob, 1100ms yoyo, stopped during jump.
+
 
 
 

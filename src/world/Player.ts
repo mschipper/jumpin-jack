@@ -12,8 +12,13 @@ export class Player {
   readonly shadow: Phaser.GameObjects.Sprite;
   worldX = 0;
   worldY = 0;
+  private readonly scene: Phaser.Scene;
+  private bob = 0;
+  private readonly bobState = { y: 0 };
+  private bobTween?: Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene) {
+    this.scene = scene;
     const scale = PLAYER_DISPLAY_WIDTH / 80;
     this.shadow = scene.add.sprite(0, 0, "adventurer", 0);
     this.shadow.setOrigin(0.5, 1);
@@ -57,9 +62,11 @@ export class Player {
     this.shadow.anims.stop();
     this.sprite.setFrame(0);
     this.shadow.setFrame(0);
+    this.startBob();
   }
 
   jump(): void {
+    this.stopBob();
     this.sprite.play("jump", true);
     this.shadow.play("jump", true);
   }
@@ -67,11 +74,44 @@ export class Player {
   place(x: number, y: number): void {
     this.worldX = x;
     this.worldY = y;
-    this.sprite.setPosition(x, y);
-    this.shadow.setPosition(x + SHADOW_OFFSET_X, y + SHADOW_OFFSET_Y);
+    this.applyPos();
+  }
+
+  private startBob(): void {
+    this.stopBob();
+    this.bobState.y = 0;
+    this.bobTween = this.scene.tweens.add({
+      targets: this.bobState,
+      y: -2,
+      duration: 1100,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+      onUpdate: () => {
+        this.bob = this.bobState.y;
+        this.applyPos();
+      },
+    });
+  }
+
+  private stopBob(): void {
+    this.bobTween?.stop();
+    this.bobTween = undefined;
+    this.bob = 0;
+    this.applyPos();
+  }
+
+  private applyPos(): void {
+    const y = this.worldY + this.bob;
+    this.sprite.setPosition(this.worldX, y);
+    this.shadow.setPosition(
+      this.worldX + SHADOW_OFFSET_X,
+      y + SHADOW_OFFSET_Y,
+    );
   }
 
   destroy(): void {
+    this.stopBob();
     this.sprite.destroy();
     this.shadow.destroy();
   }
