@@ -1,0 +1,98 @@
+/* Number-on-pad treatments. Used on a 3-row board (whole / decimal / fraction). */
+
+.board {
+  position: absolute;
+  inset: 88px 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  z-index: 8;
+}
+body.desktop .board { padding: 0 8px; }
+.row {
+  position: relative;
+  height: 28%;
+}
+.row .label {
+  position: absolute;
+  left: 0; right: 0;
+  top: -4px;
+  text-align: center;
+  font-family: "Fredoka", "Nunito", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(29,53,87,.35);
+  font-weight: 700;
+  z-index: 9;
+}
+.row .plat {
+  bottom: 8px;
+  width: 44%;
+}
+.row .plat.left { left: 4%; }
+.row .plat.right { right: 4%; left: auto; }
+
+.frac {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+.frac .bar {
+  display: block;
+  width: 1.4em;
+  height: 3px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+/* N1 · Manila tag (current) */
+body.nums-tag .plat .num {
+  font-size: 22px;
+  padding: 6px 10px 7px;
+}
+body.nums-tag .plat .num.wide { font-size: 16px; padding: 6px 8px 7px; }
+body.nums-tag .frac { font-size: 18px; }
+
+/* N2 · Face plate — wide cream plate covering most of the dirt */
+body.nums-plate .plat .num {
+  left: 8%;
+  right: 8%;
+  width: auto;
+  transform: none;
+  bottom: 6px;
+  border-radius: 8px;
+  padding: 6px 4px 7px;
+  font-size: 20px;
+  text-align: center;
+  box-shadow: 4px 5px 0 #16324f;
+}
+body.nums-plate .plat.right .num { transform: none; }
+body.nums-plate .plat .num::before { display: none; }
+body.nums-plate .plat .num.wide { font-size: 15px; letter-spacing: -0.02em; }
+body.nums-plate .frac { font-size: 16px; }
+
+/* N3 · Stamp — numbers painted on the dirt, no tag */
+body.theme-c.nums-stamp .plat .num,
+body.theme-c.nums-stamp .plat.sod .num {
+  background: transparent;
+  box-shadow: none;
+  color: #fff8e7;
+  text-shadow:
+    1px 1px 0 #16324f,
+    -1px 1px 0 #16324f,
+    1px -1px 0 #16324f,
+    -1px -1px 0 #16324f;
+  padding: 0;
+  bottom: 12px;
+  font-size: 26px;
+  transform: translateX(-50%);
+  border-radius: 0;
+}
+body.theme-c.nums-stamp .plat.right .num { transform: translateX(-50%); }
+body.theme-c.nums-stamp .plat .num::before { display: none; }
+body.theme-c.nums-stamp .plat .num.wide { font-size: 17px; }
+body.theme-c.nums-stamp .frac { font-size: 20px; color: #fff8e7; }
+body.theme-c.nums-stamp .frac .bar { background: #fff8e7; box-shadow: none; }

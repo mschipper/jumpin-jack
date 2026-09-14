@@ -60,6 +60,11 @@ Waiting on a pad pick before menu and results rounds.
 
 Mike locked Sod pads. Wants header/timer closer to A. Three HUD options on C sky + sod pads: A Classic (navy pills, gold round pause, green-gold bar), Navy chips (A colors + C offset shadow), A pills + kite-stripe timer. Waiting on a HUD pick.
 
+## 2026-09-14 — Number treatments
+
+HUD locked to A Classic. Three ways to put numbers on sod pads: Manila tag, Face plate, Stamp. Each board shows whole `999,999`, decimal `0.89`/`0.9`, and stacked `3/4` vs `2/3`. Waiting on a number-treatment pick before menus and results.
+
+
 
 
 
