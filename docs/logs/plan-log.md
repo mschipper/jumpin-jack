@@ -143,6 +143,10 @@ Stacked fraction type is 28px on a taller tag. URL/host `min` and `max` (aliases
 
 Moved stacked numerator, bar, and denominator down 5px so they sit lower on the card.
 
+## 2026-09-15 — Camera hold on fast streak
+
+Pace no longer decays between jumps. Fast window is 1.6s; height holds until 2.2s of lingering, then settles. A ~1s rhythm stays at the top.
+
 
 
 

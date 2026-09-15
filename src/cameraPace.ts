@@ -2,9 +2,12 @@
 export const REST_Y_MIN = 0.22;
 export const REST_Y_MAX = 0.6;
 
-const FAST_MS = 900;
-const SLOW_MS = 2800;
-const SETTLE_PER_SEC = 0.14;
+/** Answers at or under this still count as fast. */
+const FAST_MS = 1600;
+/** Hold current height until the player has lingered this long. */
+const HOLD_MS = 2200;
+const SLOW_MS = 3500;
+const SETTLE_PER_SEC = 0.16;
 
 export function restYFromPace(pace: number): number {
   const p = Math.min(1, Math.max(0, pace));
@@ -18,10 +21,13 @@ export function paceAfterAnswer(pace: number, elapsedMs: number, fromGround: boo
     const t = 1 - elapsedMs / FAST_MS;
     return Math.min(1, pace + 0.16 + t * 0.38);
   }
-  const t = Math.min(1, (elapsedMs - FAST_MS) / (SLOW_MS - FAST_MS));
+  if (elapsedMs < HOLD_MS) return pace;
+  const t = Math.min(1, (elapsedMs - HOLD_MS) / (SLOW_MS - HOLD_MS));
   return Math.max(0, pace - t * 0.24);
 }
 
-export function paceAfterWait(pace: number, dtSec: number): number {
+/** No decay while the current answer is still in the fast/hold window. */
+export function paceAfterWait(pace: number, dtSec: number, elapsedMs: number): number {
+  if (elapsedMs < HOLD_MS) return pace;
   return Math.max(0, pace - SETTLE_PER_SEC * dtSec);
 }

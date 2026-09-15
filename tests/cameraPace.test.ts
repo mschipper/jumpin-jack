@@ -19,11 +19,17 @@ describe("cameraPace", () => {
   });
 
   it("lowers pace on a slow answer", () => {
-    expect(paceAfterAnswer(1, 3000, false)).toBeLessThan(0.8);
+    expect(paceAfterAnswer(1, 4000, false)).toBeLessThan(0.8);
   });
 
-  it("settles toward 0 while waiting", () => {
-    expect(paceAfterWait(1, 1)).toBeLessThan(1);
-    expect(paceAfterWait(0, 1)).toBe(0);
+  it("holds height during a fast streak and only settles after lingering", () => {
+    expect(paceAfterWait(1, 1, 500)).toBe(1);
+    expect(paceAfterWait(1, 1, 1500)).toBe(1);
+    expect(paceAfterWait(1, 1, 3000)).toBeLessThan(1);
+    expect(paceAfterWait(0, 1, 4000)).toBe(0);
+  });
+
+  it("does not treat a 1s answer as slow", () => {
+    expect(paceAfterAnswer(0.8, 1000, false)).toBeGreaterThanOrEqual(0.8);
   });
 });
