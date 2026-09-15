@@ -189,6 +189,10 @@ At most two non-cloud actors on screen. Balloon is no longer always present; one
 
 Pause hit was an alpha-0 circle inside a Phaser 4 container (same miss as pads); now the gold button plus a screen-space bounds check, and Space toggles pause. Result launches over the paused climb with camera blur, rounded paper card, score cheer title, giant score, Menu. HUD is Lv left, Score beside Best, sized to text.
 
+## 2026-09-15 — Title screen and Game options
+
+Bigger Paytone wordmark on the title screen. Settings live behind a Game options panel that only lists fields not locked by URL/host. Player picks no longer overwrite `partialConfig`, so Menu can still change unlocked settings.
+
 
 
 

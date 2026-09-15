@@ -16,9 +16,11 @@ npm test
 npm run build
 ```
 
-Skip the setup menu with query params:
+Skip the title screen with all three query params:
 
 `?numbers=whole&difficulty=normal&mode=challenge`
+
+Partial params still open the title screen. **Game options** only shows the fields that were not in the URL (or host config).
 
 Optional value range (inclusive). If `min` is greater than `max`, they are swapped. Aliases: `minValue`, `maxValue`.
 
