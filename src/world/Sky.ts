@@ -9,10 +9,16 @@ type Drift = {
   pad: number;
 };
 
+type FunKind = "plane" | "flock" | "balloon" | "flutter";
+
 type Flyer = {
   root: Phaser.GameObjects.Container;
   vx: number;
+  kind: FunKind;
 };
+
+const MAX_FUN = 2;
+const FUN_KINDS: FunKind[] = ["plane", "flock", "balloon", "flutter"];
 
 export class Sky {
   private readonly scene: Phaser.Scene;
@@ -20,9 +26,7 @@ export class Sky {
   private readonly drifts: Drift[] = [];
   private readonly flyers: Flyer[] = [];
   private lastCam = 0;
-  private planeIn = 3500;
-  private flockIn = 5500;
-  private flutterIn = 9000;
+  private funIn = 4000;
   private readonly withCritters: boolean;
 
   constructor(scene: Phaser.Scene, opts?: { critters?: boolean }) {
@@ -33,7 +37,6 @@ export class Sky {
     this.backdrop.setDepth(-20);
     this.paintBackdrop();
     this.seedClouds();
-    if (this.withCritters) this.seedBalloon();
   }
 
   layout(): void {
@@ -63,21 +66,6 @@ export class Sky {
     }
 
     if (!this.withCritters) return;
-    this.planeIn -= dtMs;
-    this.flockIn -= dtMs;
-    this.flutterIn -= dtMs;
-    if (this.planeIn <= 0) {
-      this.spawnPlane();
-      this.planeIn = 12000 + Math.random() * 9000;
-    }
-    if (this.flockIn <= 0) {
-      this.spawnFlock();
-      this.flockIn = 9000 + Math.random() * 8000;
-    }
-    if (this.flutterIn <= 0) {
-      this.spawnFlutter();
-      this.flutterIn = 8000 + Math.random() * 9000;
-    }
 
     for (let i = this.flyers.length - 1; i >= 0; i--) {
       const f = this.flyers[i];
@@ -86,6 +74,12 @@ export class Sky {
         f.root.destroy();
         this.flyers.splice(i, 1);
       }
+    }
+
+    this.funIn -= dtMs;
+    if (this.funIn <= 0) {
+      if (this.flyers.length < MAX_FUN) this.spawnFun();
+      this.funIn = this.flyers.length >= MAX_FUN ? 2500 : 5000 + Math.random() * 5000;
     }
   }
 
@@ -128,20 +122,27 @@ export class Sky {
     });
   }
 
-  private seedBalloon(): void {
+  private spawnFun(): void {
+    const live = new Set(this.flyers.map((f) => f.kind));
+    const pool = FUN_KINDS.filter((k) => !live.has(k));
+    const kind = (pool.length ? pool : FUN_KINDS)[Math.floor(Math.random() * (pool.length || FUN_KINDS.length))];
+    if (kind === "plane") this.spawnPlane();
+    else if (kind === "flock") this.spawnFlock();
+    else if (kind === "balloon") this.spawnBalloon();
+    else this.spawnFlutter();
+  }
+
+  private spawnBalloon(): void {
     const w = this.scene.scale.width;
     const h = this.scene.scale.height;
+    const fromLeft = Math.random() < 0.5;
     const root = makeHotAirBalloon(this.scene);
     root.setScrollFactor(0);
     root.setDepth(-6);
-    root.x = w * (0.2 + Math.random() * 0.6);
-    root.y = 90 + Math.random() * (h * 0.28);
-    this.drifts.push({
-      obj: root,
-      vx: (8 + Math.random() * 6) * (Math.random() < 0.5 ? -1 : 1),
-      parallax: 0.12,
-      pad: 50,
-    });
+    root.x = fromLeft ? -60 : w + 60;
+    root.y = 80 + Math.random() * (h * 0.28);
+    const speed = 22 + Math.random() * 10;
+    this.flyers.push({ root, vx: fromLeft ? speed : -speed, kind: "balloon" });
   }
 
   private spawnPlane(): void {
@@ -154,7 +155,7 @@ export class Sky {
     root.x = fromLeft ? -110 : w + 110;
     root.y = 64 + Math.random() * (h * 0.32);
     const speed = 110 + Math.random() * 40;
-    this.flyers.push({ root, vx: fromLeft ? speed : -speed });
+    this.flyers.push({ root, vx: fromLeft ? speed : -speed, kind: "plane" });
   }
 
   private spawnFlock(): void {
@@ -167,7 +168,7 @@ export class Sky {
     root.x = fromLeft ? -90 : w + 90;
     root.y = 70 + Math.random() * (h * 0.28);
     const speed = 78 + Math.random() * 24;
-    this.flyers.push({ root, vx: fromLeft ? speed : -speed });
+    this.flyers.push({ root, vx: fromLeft ? speed : -speed, kind: "flock" });
   }
 
   private spawnFlutter(): void {
@@ -184,7 +185,7 @@ export class Sky {
     root.x = fromLeft ? -70 : w + 70;
     root.y = y;
     const speed = kind === "bird" ? 70 + Math.random() * 30 : 46 + Math.random() * 22;
-    this.flyers.push({ root, vx: fromLeft ? speed : -speed });
+    this.flyers.push({ root, vx: fromLeft ? speed : -speed, kind: "flutter" });
   }
 }
 

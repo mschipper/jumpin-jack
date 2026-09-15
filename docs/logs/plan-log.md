@@ -181,6 +181,10 @@ Wired across menu, climb, pause, results. 37 tests. Vite serves the mp3s. Headle
 
 Larger clouds plus a red biplane, hot-air balloon, and bird flock. Start hint is a large centered banner that leaves on the first jump. Pads spread to 0.22/0.78. Correct SFX was both late (played after the 480ms land) and had ~100ms of baked silence plus a slow power-up arpeggio; trim silence, speed the clip, play on pick.
 
+## 2026-09-15 — Cap sky flourishes
+
+At most two non-cloud actors on screen. Balloon is no longer always present; one spawn queue picks plane / flock / balloon / butterfly.
+
 
 
 
