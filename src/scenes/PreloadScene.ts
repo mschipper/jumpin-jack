@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SoundManager } from "../audio/SoundManager";
 import { isComplete, mergeConfig, parseSearch } from "../config";
 import { assetBase, hostConfig } from "../host";
 import type { PartialConfig } from "../numbers/types";
@@ -14,6 +15,7 @@ export class PreloadScene extends Phaser.Scene {
       frameWidth: 80,
       frameHeight: 110,
     });
+    SoundManager.preload(this);
   }
 
   create(): void {

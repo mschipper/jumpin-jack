@@ -151,6 +151,32 @@ Pace no longer decays between jumps. Fast window is 1.6s; height holds until 2.2
 
 Hold was too sticky. Restored continuous settle, slower than the original: 0.05/s while waiting (was 0.14), 0.12 drop at a fully slow answer (was 0.24). Fast window stays 1.6s so a ~1s rhythm still climbs.
 
+## 2026-09-15 — Phase 4 start
+
+Audio + height flourishes. Convert the three oggs to mp3, wire SoundManager (host `"sounds"` early-return), loop music with pause/mute, procedural paper clouds with parallax drift, occasional in-engine paper birds/butterflies, despawn off-screen.
+
+Planned steps:
+1. ffmpeg ogg → mp3; copy clips to `public/assets/audio/`.
+2. `src/audio/SoundManager.ts` + preload + event wiring + pause mute.
+3. `src/world/Sky.ts` clouds and critters.
+4. Tests for sound id contract / wrap helper; playtest.
+
+## 2026-09-15 — Phase 4 audio files
+
+Converted `correct.ogg`, `crumble.ogg`, `music.ogg` to mp3. Copied all eight clips to `public/assets/audio/`. Sources stay in `audio/`.
+
+## 2026-09-15 — Phase 4 SoundManager
+
+`src/audio/SoundManager.ts` loads whole-file mp3s unless registry `"sounds"` or `noAudio` is set. Music loops at 0.38; pause pauses it; mute lives on the pause overlay and persists in localStorage. SFX: button, correct land, crumble, fail, level complete, game over / new record.
+
+## 2026-09-15 — Phase 4 sky
+
+Procedural cream stacked-ellipse clouds with navy offset shadows, slow drift, climb parallax, recycle off-screen. Occasional in-engine paper birds and butterflies (no sprites). Depth behind pads so numbers stay readable.
+
+## 2026-09-15 — Phase 4 complete
+
+Wired across menu, climb, pause, results. 37 tests. Vite serves the mp3s. Headless Chrome mounts the Phaser canvas but does not paint WebGL, so visual/audio feel needs Mike’s playtest.
+
 
 
 

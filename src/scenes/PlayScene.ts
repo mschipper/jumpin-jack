@@ -1,12 +1,6 @@
 import Phaser from "phaser";
-import {
-  JUMP_ARC,
-  JUMP_MS,
-  SHAKE_FRACTION,
-  SKY_BOT,
-  SKY_TOP,
-  STEP,
-} from "../constants";
+import { JUMP_ARC, JUMP_MS, SHAKE_FRACTION, STEP } from "../constants";
+import { soundsOf } from "../audio/SoundManager";
 import { hostEvents, externalScores } from "../host";
 import { pickPair } from "../numbers/pair";
 import { isCasualWin, shouldLevelBreak } from "../modes";
@@ -19,6 +13,7 @@ import { Hud } from "../ui/Hud";
 import { PauseOverlay } from "../pause/PauseOverlay";
 import { columnX, playHeight } from "../world/column";
 import { Player } from "../world/Player";
+import { Sky } from "../world/Sky";
 import { SodPlatform } from "../world/SodPlatform";
 
 export class PlayScene extends Phaser.Scene {
@@ -26,7 +21,7 @@ export class PlayScene extends Phaser.Scene {
   private player!: Player;
   private hud!: Hud;
   private pauseUi!: PauseOverlay;
-  private sky!: Phaser.GameObjects.Graphics;
+  private sky!: Sky;
   private ground!: Phaser.GameObjects.Graphics;
   private leftPlat: SodPlatform | null = null;
   private rightPlat: SodPlatform | null = null;
@@ -49,7 +44,6 @@ export class PlayScene extends Phaser.Scene {
   private duration = 4500;
   private remainingOnPause = 0;
   private groundTop = 0;
-  private clouds: Phaser.GameObjects.Graphics[] = [];
 
   constructor() {
     super("climb");
@@ -71,14 +65,18 @@ export class PlayScene extends Phaser.Scene {
     this.platforms = [];
     this.pace = 0;
 
-    this.drawSky();
+    this.sky = new Sky(this);
     this.drawGround();
+    soundsOf(this).playMusic();
     this.player = new Player(this);
     this.hud = new Hud(this, () => this.togglePause());
     this.pauseUi = new PauseOverlay(
       this,
       () => this.togglePause(),
-      () => this.scene.start("menu"),
+      () => {
+        soundsOf(this).stopMusic();
+        this.scene.start("menu");
+      },
     );
 
     this.groundTop = playHeight(this) - 120;
@@ -94,49 +92,9 @@ export class PlayScene extends Phaser.Scene {
 
     this.input.keyboard?.on("keydown", (e: KeyboardEvent) => this.onKey(e));
     this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => this.onPointer(pointer));
-    this.scale.on("resize", () => this.onResize());
+    this.scale.on("resize", this.onResize, this);
+    this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
     hostEvents(this).emit("game_start", { ...this.config });
-  }
-
-  private drawSky(): void {
-    this.sky = this.add.graphics();
-    this.sky.setScrollFactor(0);
-    this.sky.setDepth(-10);
-    this.paintSky();
-    this.makeClouds();
-  }
-
-  private paintSky(): void {
-    const w = this.scale.width;
-    const h = this.scale.height;
-    this.sky.clear();
-    this.sky.fillGradientStyle(SKY_TOP, SKY_TOP, SKY_BOT, SKY_BOT, 1);
-    this.sky.fillRect(0, 0, w, h);
-  }
-
-  private makeClouds(): void {
-    for (const c of this.clouds) c.destroy();
-    this.clouds = [];
-    const spots = [
-      [0.12, 0.18, 70],
-      [0.78, 0.12, 90],
-      [0.88, 0.42, 50],
-      [0.18, 0.55, 80],
-    ];
-    for (const [fx, fy, r] of spots) {
-      const g = this.add.graphics();
-      g.fillStyle(0xfffdf6, 1);
-      const x = this.scale.width * fx;
-      const y = this.scale.height * fy;
-      g.fillCircle(x, y, r * 0.55);
-      g.fillCircle(x + r * 0.45, y + 6, r * 0.5);
-      g.fillCircle(x - r * 0.4, y + 8, r * 0.42);
-      g.fillStyle(0x16324f, 1);
-      // offset shadow as extra puffs underneath, then cream on top already drawn
-      g.setScrollFactor(0.15);
-      g.setDepth(-5);
-      this.clouds.push(g);
-    }
   }
 
   private drawGround(): void {
@@ -251,12 +209,14 @@ export class PlayScene extends Phaser.Scene {
       if (shouldLevelBreak(this.config.mode, this.floor)) {
         pauseNext = true;
         this.hud.setHint("JUMP WHEN READY");
+        soundsOf(this).play("level_complete");
         hostEvents(this).emit("level_break", { level: newLevel });
       } else {
         this.hud.setHint("JUMP TO THE BIGGER NUMBER");
       }
       this.hud.set(this.score, newLevel, Math.max(this.best, this.score), this.config.mode);
       if (isCasualWin(this.config.mode, this.floor)) {
+        soundsOf(this).play("level_complete");
         this.finish("You made it!");
         return;
       }
@@ -294,6 +254,7 @@ export class PlayScene extends Phaser.Scene {
         this.player.place(toX, toY);
         this.player.idle();
         this.jumping = false;
+        soundsOf(this).play("correct");
         onLand();
       },
     });
@@ -302,6 +263,7 @@ export class PlayScene extends Phaser.Scene {
   private startFall(title: string): void {
     this.falling = true;
     this.busy = true;
+    soundsOf(this).play("fail");
     this.player.jump();
     this.tweens.add({
       targets: this.player.sprite,
@@ -342,11 +304,13 @@ export class PlayScene extends Phaser.Scene {
       this.leftPlat?.setTagVisible(false);
       this.rightPlat?.setTagVisible(false);
       this.pauseUi.show();
+      soundsOf(this).pauseMusic();
       hostEvents(this).emit("pause");
       return;
     }
     this.paused = false;
     this.pauseUi.hide();
+    soundsOf(this).resumeMusic();
     if (this.pair && this.leftPlat && this.rightPlat) {
       const next = pickPair(
         Math.max(1, this.floor + 1),
@@ -383,7 +347,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private onResize(): void {
-    this.paintSky();
+    this.sky.layout();
     this.groundTop = playHeight(this) - 120;
     this.paintGround();
     this.hud.layout(this);
@@ -417,6 +381,7 @@ export class PlayScene extends Phaser.Scene {
     const camErr = this.cameraTarget - this.cameraY;
     this.cameraY += camErr * Math.min(1, (_delta / 1000) * 6);
     this.cameras.main.setScroll(0, this.cameraY);
+    this.sky.update(_delta, this.cameraY, this.paused);
 
     if (this.paused || this.falling || this.onBreak || this.config.mode === "casual") {
       if (this.onBreak || this.config.mode === "casual") this.hud.setTimer(1, this.config.mode);
@@ -433,6 +398,7 @@ export class PlayScene extends Phaser.Scene {
       if (p.gone || !p.dropAt) continue;
       if (now >= p.dropAt) {
         const wasStand = p === this.stand;
+        soundsOf(this).play("crumble");
         p.crumble(this);
         if (wasStand && !this.falling && !this.jumping) this.startFall("You fell!");
       } else if (now >= p.shakeAt) {

@@ -44,17 +44,17 @@ Keep them in the repo as source. Omit them from `public/assets`.
 
 ## Audio — production set (have — use)
 
-`audio/`. Named for intended use. Convert the three `.ogg` files to `.mp3` in **Phase 4** (Safari-friendly). Keep originals in `audio/` as source; ship mp3 under `public/assets/audio/`.
+`audio/`. Named for intended use. Source may be ogg; **shipped** copies are mp3 under `public/assets/audio/` (Safari-friendly). Keep originals in `audio/` as source.
 
 | File | Format | Duration | Role |
 |---|---|---|---|
 | `button_press.mp3` | mp3, 44.1 kHz stereo | 1.32 s | Menus / pause |
-| `correct.ogg` | vorbis, 44.1 kHz mono | 0.52 s | Correct land. **Needs mp3.** |
-| `crumble.ogg` | vorbis, 48 kHz stereo | 0.46 s | Stand pad gives way. **Needs mp3.** |
+| `correct.ogg` | vorbis, 44.1 kHz mono | 0.52 s | Correct land. Shipped as mp3. |
+| `crumble.ogg` | vorbis, 48 kHz stereo | 0.46 s | Stand pad gives way. Shipped as mp3. |
 | `fail.mp3` | mp3, 44.1 kHz stereo | 3.00 s | Wrong pick / timeout fall |
 | `game_over.mp3` | mp3, 44.1 kHz stereo | 3.54 s | Results appear |
 | `level_complete.mp3` | mp3, 44.1 kHz stereo | 0.84 s | Challenge break; Casual win |
-| `music.ogg` | vorbis, 48 kHz stereo | 52.5 s loop | Climb music. **Needs mp3.** |
+| `music.ogg` | vorbis, 48 kHz stereo | 52.5 s loop | Climb music. Shipped as mp3. |
 | `new_high_score.mp3` | mp3, 44.1 kHz stereo | 2.37 s | Beat this-config best |
 
 No license files sit next to these. Treat them as project audio unless Mike says otherwise.
@@ -92,9 +92,9 @@ No art from the prototype (CSS boxes) is reused.
 | Ground / grass | 1–2 | Player starts here, no start pad. Scrolls off and is gone. | Same as overall-look mockups. Graphic shapes are fine if that look wins. |
 | Title wordmark “Jumpin’ Jack” | 1 | Menus; maybe HUD. | 3 options in menu mockups, or a dedicated wordmark round. |
 | Pause button + CTA / menu chrome | 1–2 | Pause on HUD; Climb again / Change setup on results. | Phaser + type is enough if Phase 1 chooses a flat UI. Otherwise 3 button styles. |
-| Bird (side fly, few frames) | 4 | Occasional, non-distracting. | 3 sprite options when Phase 4 starts, unless drawn procedurally. |
+| Bird (side fly, few frames) | 4 | Occasional, non-distracting. | Drawn in-engine as cut-paper shapes (navy offset + cream). |
 | Butterfly (side fly, few frames) | 4 | Same. | Same as bird. |
-| Clouds | 4 | Mario-style puffs, slow drift, parallax. | **Procedural ellipses** unless Phase 1 picks painted clouds. |
+| Clouds | 4 | Cream stacked ellipses, navy offset shadows, slow drift, parallax. | Procedural (locked in visual direction). |
 | Number typeface | 1–2 | Kid-readable at 6 digits and stacked fractions (two text objects + a bar). | Pick a bundled webfont during visual direction. Not an image. |
 | Fall pose | — | None. Reuse jump. | No asset. |
 | Crumble debris / land puff | 5 | Tiny shapes. | In-engine particles. No sprite required. |
@@ -112,12 +112,12 @@ No art from the prototype (CSS boxes) is reused.
 | Platforms | **Missing** |
 | Ground | **Missing** |
 | Sky | Code (clear blue) |
-| Clouds | Procedural (Phase 4) |
-| Birds / butterflies | **Missing** (Phase 4) |
+| Clouds | Procedural paper ellipses |
+| Birds / butterflies | In-engine paper silhouettes |
 | HUD / pause / menus | **Missing** chrome; can be type+shapes |
 | Wordmark | **Missing** |
-| Music | Have (ogg → mp3 in Phase 4) |
-| SFX: correct, crumble, fail, game over, level complete, high score, button | Have (3 oggs → mp3 in Phase 4) |
+| Music | Have (mp3 in `public/assets/audio/`) |
+| SFX: correct, crumble, fail, game over, level complete, high score, button | Have (mp3 in `public/assets/audio/`) |
 | Font | **Missing** pick |
 
 ---

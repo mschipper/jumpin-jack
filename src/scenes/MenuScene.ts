@@ -1,12 +1,15 @@
 import Phaser from "phaser";
+import { soundsOf } from "../audio/SoundManager";
 import { GOLD, NAVY, PLAY_COLUMN } from "../constants";
 import type { Difficulty, NumberKind, PlayMode, PartialConfig } from "../numbers/types";
 import { columnLeft } from "../world/column";
+import { Sky } from "../world/Sky";
 
 export class MenuScene extends Phaser.Scene {
   private numbers: NumberKind = "whole";
   private difficulty: Difficulty = "normal";
   private mode: PlayMode = "challenge";
+  private sky!: Sky;
 
   constructor() {
     super("menu");
@@ -18,8 +21,9 @@ export class MenuScene extends Phaser.Scene {
     this.difficulty = partial.difficulty ?? "normal";
     this.mode = partial.mode ?? "challenge";
 
-    this.add.graphics().fillGradientStyle(0x2a6fbd, 0x2a6fbd, 0x9fd0f5, 0x9fd0f5, 1)
-      .fillRect(0, 0, this.scale.width, this.scale.height);
+    this.sky = new Sky(this);
+    this.scale.on("resize", this.onResize, this);
+    this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
 
     const x = columnLeft(this) + PLAY_COLUMN / 2;
     this.add
@@ -68,7 +72,10 @@ export class MenuScene extends Phaser.Scene {
         color: "#1d3557",
       })
       .setOrigin(0.5);
-    start.on("pointerup", () => this.begin());
+    start.on("pointerup", () => {
+      soundsOf(this).play("button_press");
+      this.begin();
+    });
 
     this.add
       .text(x, y + 70, "Tap a platform  ·  arrows / A D", {
@@ -122,6 +129,7 @@ export class MenuScene extends Phaser.Scene {
         .setOrigin(0.5);
       buttons.push({ bg, key: opt });
       bg.on("pointerup", () => {
+        soundsOf(this).play("button_press");
         onPick(opt);
         for (const b of buttons) {
           const sel = b.key === opt;
@@ -144,6 +152,14 @@ export class MenuScene extends Phaser.Scene {
     this.registry.set("partialConfig", config);
     this.registry.set("playConfig", config);
     this.scene.start("climb");
+  }
+
+  update(_time: number, delta: number): void {
+    this.sky.update(delta, 0, false);
+  }
+
+  private onResize(): void {
+    this.sky.layout();
   }
 }
 

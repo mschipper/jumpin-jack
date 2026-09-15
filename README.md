@@ -26,6 +26,8 @@ Optional value range (inclusive). If `min` is greater than `max`, they are swapp
 
 Number types (`whole` / `decimal` / `fraction`), difficulties, and modes (`casual` / `challenge` / `speed`) are live. Casual wins at 20 with no timer. Challenge rests every 20. Speed run has no breaks and a louder timer. `min` / `max` clamp the numeric value of each platform (wholes as integers, decimals as their value, fractions as num/den).
 
+Mute is on the pause overlay. Safari/iOS needs a tap before music starts (browser autoplay). Audio files live in `public/assets/audio/` as whole-file mp3s.
+
 ## Visual direction
 
 See `docs/visual-direction.md`.

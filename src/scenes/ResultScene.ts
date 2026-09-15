@@ -1,7 +1,9 @@
 import Phaser from "phaser";
+import { soundsOf } from "../audio/SoundManager";
 import { GOLD, PLAY_COLUMN } from "../constants";
 import type { GameConfig } from "../numbers/types";
 import { columnLeft } from "../world/column";
+import { Sky } from "../world/Sky";
 
 interface ResultData {
   title: string;
@@ -12,13 +14,21 @@ interface ResultData {
 }
 
 export class ResultScene extends Phaser.Scene {
+  private sky!: Sky;
+
   constructor() {
     super("result");
   }
 
   create(data: ResultData): void {
-    this.add.graphics().fillGradientStyle(0x2a6fbd, 0x2a6fbd, 0x9fd0f5, 0x9fd0f5, 1)
-      .fillRect(0, 0, this.scale.width, this.scale.height);
+    this.sky = new Sky(this);
+    this.scale.on("resize", this.onResize, this);
+    this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
+    const s = soundsOf(this);
+    s.stopMusic();
+    s.stopSfx();
+    if (data.isRecord) s.play("new_high_score");
+    else if (data.title !== "You made it!") s.play("game_over");
 
     const x = columnLeft(this) + PLAY_COLUMN / 2;
     const y = this.scale.height / 2;
@@ -69,6 +79,7 @@ export class ResultScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     again.on("pointerup", () => {
+      soundsOf(this).play("button_press");
       this.registry.set("playConfig", data.config);
       this.scene.start("climb");
     });
@@ -81,6 +92,17 @@ export class ResultScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
-    change.on("pointerup", () => this.scene.start("menu"));
+    change.on("pointerup", () => {
+      soundsOf(this).play("button_press");
+      this.scene.start("menu");
+    });
+  }
+
+  update(_time: number, delta: number): void {
+    this.sky.update(delta, 0, false);
+  }
+
+  private onResize(): void {
+    this.sky.layout();
   }
 }
