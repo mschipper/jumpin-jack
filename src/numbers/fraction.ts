@@ -1,7 +1,8 @@
 import { closenessForFloor } from "./whole";
 import { randInt, type Rng } from "./rng";
 import type { Difficulty, FractionValue } from "./types";
-import { compare } from "./compare";
+import { compare, numericValue } from "./compare";
+import { inRange, type NumberRange } from "./range";
 
 function gcd(a: number, b: number): number {
   a = Math.abs(a);
@@ -47,6 +48,7 @@ export function pickFractionPair(
   floor: number,
   difficulty: Difficulty,
   rng: Rng,
+  range?: NumberRange,
 ): [FractionValue, FractionValue] {
   const close = closenessForFloor(floor, difficulty);
   const maxDen = difficulty === "easy" ? 8 : 12;
@@ -86,6 +88,7 @@ export function pickFractionPair(
     }
     if (compare(a, b) === 0) continue;
     if (a.den === 1 || b.den === 1) continue;
+    if (!inRange(numericValue(a), range) || !inRange(numericValue(b), range)) continue;
     if (close === "far") {
       const gap = Math.abs(a.num * b.den - b.num * a.den);
       if (gap * 4 < a.den * b.den && attempt < 20) continue;

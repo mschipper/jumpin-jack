@@ -168,6 +168,8 @@ export class PlayScene extends Phaser.Scene {
       this.config.difficulty,
       randomRng,
       this.config.numbers,
+      undefined,
+      { min: this.config.min, max: this.config.max },
     );
     this.pair = pair;
     const left = new SodPlatform(this, columnX(this, 0.27), worldY, 0.27, pair.left);
@@ -352,6 +354,7 @@ export class PlayScene extends Phaser.Scene {
         randomRng,
         this.config.numbers,
         this.pair,
+        { min: this.config.min, max: this.config.max },
       );
       this.pair = next;
       this.leftPlat.setValue(next.left);

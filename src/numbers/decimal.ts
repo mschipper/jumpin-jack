@@ -1,7 +1,8 @@
 import { closenessForFloor } from "./whole";
 import { randInt, type Rng } from "./rng";
 import type { DecimalValue, Difficulty } from "./types";
-import { compare } from "./compare";
+import { compare, numericValue } from "./compare";
+import { inRange, type NumberRange } from "./range";
 
 function placesFor(floor: number, difficulty: Difficulty): number {
   if (difficulty === "easy") return floor <= 20 ? 1 : 2;
@@ -51,11 +52,16 @@ export function pickDecimalPair(
   floor: number,
   difficulty: Difficulty,
   rng: Rng,
+  range?: NumberRange,
 ): [DecimalValue, DecimalValue] {
   const close = closenessForFloor(floor, difficulty);
   if (difficulty === "hard" && close === "ones" && rng() < 0.28) {
     const trap = TRAPS[randInt(rng, 0, TRAPS.length - 1)];
-    return rng() < 0.5 ? [trap[0], trap[1]] : [trap[1], trap[0]];
+    const pair: [DecimalValue, DecimalValue] =
+      rng() < 0.5 ? [trap[0], trap[1]] : [trap[1], trap[0]];
+    if (inRange(numericValue(pair[0]), range) && inRange(numericValue(pair[1]), range)) {
+      return pair;
+    }
   }
 
   const places = placesFor(floor, difficulty);
@@ -79,7 +85,16 @@ export function pickDecimalPair(
     const left = make(a, places);
     const right = make(b, places);
     if (compare(left, right) === 0) continue;
+    if (!inRange(numericValue(left), range) || !inRange(numericValue(right), range)) continue;
     return [left, right];
   }
-  return [make(2, places), make(8, places)];
+  return fallbackDecimalPair(places, range);
+}
+
+function fallbackDecimalPair(places: number, range?: NumberRange): [DecimalValue, DecimalValue] {
+  const lo = range?.min ?? 0.1;
+  const hi = range?.max ?? 0.9;
+  const a = Math.max(1, Math.round(lo * 10 ** places));
+  const b = Math.max(a + 1, Math.round(hi * 10 ** places));
+  return [make(a, places), make(b, places)];
 }

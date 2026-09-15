@@ -4,7 +4,7 @@ import { formatValue } from "../numbers/format";
 import type { GameValue } from "../numbers/types";
 
 const W = 176;
-const DIRT_H = 52;
+const DIRT_H = 72;
 const GRASS_H = 16;
 
 export class SodPlatform {
@@ -50,9 +50,9 @@ export class SodPlatform {
 
     this.tagBg = scene.add.rectangle(0, GRASS_H + 26, 88, 36, 0xf3e2b8);
     this.tagBg.setStrokeStyle(0, NAVY);
-    this.tagPin = scene.add.circle(0, GRASS_H + 8, 5, 0xe85d4c);
+    this.tagPin = scene.add.circle(0, GRASS_H + 6, 6, 0xe85d4c);
     this.tagText = scene.add
-      .text(0, GRASS_H + 26, "", {
+      .text(0, GRASS_H + 32, "", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "22px",
         color: "#16324f",
@@ -60,18 +60,18 @@ export class SodPlatform {
       })
       .setOrigin(0.5);
     this.fracNum = scene.add
-      .text(0, GRASS_H + 16, "", {
+      .text(0, GRASS_H + 22, "", {
         fontFamily: "Nunito, sans-serif",
-        fontSize: "16px",
+        fontSize: "28px",
         color: "#16324f",
         fontStyle: "800",
       })
       .setOrigin(0.5);
-    this.fracBar = scene.add.rectangle(0, GRASS_H + 26, 22, 3, 0x16324f);
+    this.fracBar = scene.add.rectangle(0, GRASS_H + 38, 28, 4, 0x16324f);
     this.fracDen = scene.add
-      .text(0, GRASS_H + 36, "", {
+      .text(0, GRASS_H + 54, "", {
         fontFamily: "Nunito, sans-serif",
-        fontSize: "16px",
+        fontSize: "28px",
         color: "#16324f",
         fontStyle: "800",
       })
@@ -110,14 +110,14 @@ export class SodPlatform {
       return;
     }
     const frac = value.kind === "fraction";
-    this.tagBg.setSize(88, frac ? 48 : 36);
-    this.tagBg.y = GRASS_H + (frac ? 30 : 26);
+    this.tagBg.setSize(frac ? 110 : 88, frac ? 76 : 36);
+    this.tagBg.y = GRASS_H + (frac ? 40 : 32);
     if (frac) {
       this.tagText.setText("");
       this.fracNum.setText(String(value.num));
       this.fracDen.setText(String(value.den));
-      const w = Math.max(18, Math.max(this.fracNum.width, this.fracDen.width) + 8);
-      this.fracBar.setSize(w, 3);
+      const w = Math.max(28, Math.max(this.fracNum.width, this.fracDen.width) + 10);
+      this.fracBar.setSize(w, 4);
     } else {
       const label = formatValue(value);
       this.tagText.setText(label);

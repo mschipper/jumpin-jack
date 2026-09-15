@@ -133,10 +133,13 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private begin(): void {
+    const prior = (this.registry.get("partialConfig") as PartialConfig | undefined) ?? {};
     const config = {
       numbers: this.numbers,
       difficulty: this.difficulty,
       mode: this.mode,
+      min: prior.min,
+      max: prior.max,
     };
     this.registry.set("partialConfig", config);
     this.registry.set("playConfig", config);

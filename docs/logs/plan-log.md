@@ -135,6 +135,10 @@ Decimal + fraction generators, stacked fraction tags, easy/hard already in whole
 
 Whole/decimal/fraction × easy/normal/hard generators (never equal, 6-digit decimal cap, proper fractions den 2–12, cross-multiply compare). Stacked fraction tags. Casual win at 20. Speed run: no level breaks, thicker timer + seconds once the clock starts. URL params skip only the fields provided. 30 unit tests.
 
+## 2026-09-15 — Larger fractions + min/max params
+
+Stacked fraction type is 28px on a taller tag. URL/host `min` and `max` (aliases `minValue`/`maxValue`) clamp generated values; not required to skip the menu. Best-score key includes the range when set.
+
 
 
 

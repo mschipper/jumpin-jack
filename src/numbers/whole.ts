@@ -1,5 +1,6 @@
 import type { Closeness, Difficulty } from "./types";
 import { randInt, type Rng } from "./rng";
+import type { NumberRange } from "./range";
 
 export function digitBudget(
   floor: number,
@@ -52,15 +53,39 @@ function clampTo(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
 }
 
+export function wholeBounds(
+  floor: number,
+  difficulty: Difficulty,
+  rng: Rng,
+  range?: NumberRange,
+): [number, number] {
+  const [dMin, dMax] = digitBudget(floor, difficulty);
+  const digits = randInt(rng, dMin, dMax);
+  let [lo, hi] = rangeForDigits(digits);
+  const rmin = range?.min != null ? Math.ceil(range.min) : undefined;
+  const rmax = range?.max != null ? Math.floor(range.max) : undefined;
+  if (rmin != null) lo = Math.max(lo, rmin);
+  if (rmax != null) hi = Math.min(hi, rmax);
+  if (lo > hi) {
+    lo = Math.max(1, rmin ?? 1);
+    hi = Math.min(999_999, rmax ?? 999_999);
+    if (lo > hi) {
+      const t = lo;
+      lo = hi;
+      hi = t;
+    }
+  }
+  return [Math.max(1, lo), Math.min(999_999, hi)];
+}
+
 export function pickWholePair(
   floor: number,
   difficulty: Difficulty,
   rng: Rng,
   exclude?: [number, number],
+  range?: NumberRange,
 ): [number, number] {
-  const [dMin, dMax] = digitBudget(floor, difficulty);
-  const digits = randInt(rng, dMin, dMax);
-  const [lo, hi] = rangeForDigits(digits);
+  const [lo, hi] = wholeBounds(floor, difficulty, rng, range);
   const close = closenessForFloor(floor, difficulty);
 
   for (let attempt = 0; attempt < 40; attempt++) {

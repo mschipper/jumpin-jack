@@ -28,6 +28,22 @@ describe("parseSearch", () => {
     expect(c.numbers).toBeUndefined();
     expect(c.difficulty).toBe("easy");
   });
+
+  it("reads min and max and swaps if reversed", () => {
+    const c = parseSearch("?min=10&max=20");
+    expect(c.min).toBe(10);
+    expect(c.max).toBe(20);
+    const swapped = parseSearch("?min=50&max=5");
+    expect(swapped.min).toBe(5);
+    expect(swapped.max).toBe(50);
+  });
+
+  it("does not require min/max to be complete", () => {
+    const c = parseSearch("?numbers=whole&difficulty=normal&mode=challenge&min=1&max=20");
+    expect(isComplete(c)).toBe(true);
+    expect(c.min).toBe(1);
+    expect(c.max).toBe(20);
+  });
 });
 
 describe("mergeConfig", () => {

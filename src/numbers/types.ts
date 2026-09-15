@@ -24,12 +24,17 @@ export interface GameConfig {
   numbers: NumberKind;
   difficulty: Difficulty;
   mode: PlayMode;
+  /** Inclusive value range from URL/host (`min` / `max`). */
+  min?: number;
+  max?: number;
 }
 
 export interface PartialConfig {
   numbers?: NumberKind;
   difficulty?: Difficulty;
   mode?: PlayMode;
+  min?: number;
+  max?: number;
 }
 
 export interface ChoicePair {

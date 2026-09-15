@@ -20,7 +20,11 @@ Skip the setup menu with query params:
 
 `?numbers=whole&difficulty=normal&mode=challenge`
 
-Number types (`whole` / `decimal` / `fraction`), difficulties, and modes (`casual` / `challenge` / `speed`) are live. Casual wins at 20 with no timer. Challenge rests every 20. Speed run has no breaks and a louder timer.
+Optional value range (inclusive). If `min` is greater than `max`, they are swapped. Aliases: `minValue`, `maxValue`.
+
+`?numbers=whole&difficulty=easy&mode=casual&min=1&max=20`
+
+Number types (`whole` / `decimal` / `fraction`), difficulties, and modes (`casual` / `challenge` / `speed`) are live. Casual wins at 20 with no timer. Challenge rests every 20. Speed run has no breaks and a louder timer. `min` / `max` clamp the numeric value of each platform (wholes as integers, decimals as their value, fractions as num/den).
 
 ## Visual direction
 

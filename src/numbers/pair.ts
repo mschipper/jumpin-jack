@@ -4,6 +4,7 @@ import { pickWholePair } from "./whole";
 import { pickDecimalPair } from "./decimal";
 import { pickFractionPair } from "./fraction";
 import type { Rng } from "./rng";
+import type { NumberRange } from "./range";
 
 export function pickPair(
   floor: number,
@@ -11,9 +12,10 @@ export function pickPair(
   rng: Rng,
   numbers: NumberKind = "whole",
   exclude?: ChoicePair,
+  range?: NumberRange,
 ): ChoicePair {
   for (let i = 0; i < 30; i++) {
-    const [A, B] = rawPair(floor, difficulty, rng, numbers);
+    const [A, B] = rawPair(floor, difficulty, rng, numbers, range);
     const leftFirst = rng() < 0.5;
     const left = leftFirst ? A : B;
     const right = leftFirst ? B : A;
@@ -35,10 +37,11 @@ function rawPair(
   difficulty: Difficulty,
   rng: Rng,
   numbers: NumberKind,
+  range?: NumberRange,
 ): [GameValue, GameValue] {
-  if (numbers === "decimal") return pickDecimalPair(floor, difficulty, rng);
-  if (numbers === "fraction") return pickFractionPair(floor, difficulty, rng);
-  const [a, b] = pickWholePair(floor, difficulty, rng);
+  if (numbers === "decimal") return pickDecimalPair(floor, difficulty, rng, range);
+  if (numbers === "fraction") return pickFractionPair(floor, difficulty, rng, range);
+  const [a, b] = pickWholePair(floor, difficulty, rng, undefined, range);
   return [
     { kind: "whole", n: a },
     { kind: "whole", n: b },

@@ -17,6 +17,12 @@ export function greater(a: GameValue, b: GameValue): boolean {
   return compare(a, b) > 0;
 }
 
+export function numericValue(v: GameValue): number {
+  if (v.kind === "whole") return v.n;
+  if (v.kind === "decimal") return v.scaled / 10 ** v.places;
+  return v.num / v.den;
+}
+
 export function valuesEqual(a: GameValue, b: GameValue): boolean {
   return compare(a, b) === 0;
 }

@@ -137,6 +137,33 @@ describe("decimals", () => {
   });
 });
 
+describe("min/max range", () => {
+  it("keeps whole pairs inside the range", () => {
+    const rng = mulberry32(5);
+    for (let i = 0; i < 40; i++) {
+      const [a, b] = pickWholePair(50, "hard", rng, undefined, { min: 10, max: 30 });
+      expect(a).toBeGreaterThanOrEqual(10);
+      expect(a).toBeLessThanOrEqual(30);
+      expect(b).toBeGreaterThanOrEqual(10);
+      expect(b).toBeLessThanOrEqual(30);
+      expect(a).not.toBe(b);
+    }
+  });
+
+  it("keeps decimal values inside the range", () => {
+    const rng = mulberry32(6);
+    for (let i = 0; i < 30; i++) {
+      const [a, b] = pickDecimalPair(10, "normal", rng, { min: 0.2, max: 5 });
+      const av = a.scaled / 10 ** a.places;
+      const bv = b.scaled / 10 ** b.places;
+      expect(av).toBeGreaterThanOrEqual(0.2 - 1e-9);
+      expect(av).toBeLessThanOrEqual(5 + 1e-9);
+      expect(bv).toBeGreaterThanOrEqual(0.2 - 1e-9);
+      expect(bv).toBeLessThanOrEqual(5 + 1e-9);
+    }
+  });
+});
+
 describe("fractions", () => {
   it("are proper, denominator 2–12, never equal", () => {
     const rng = mulberry32(22);
