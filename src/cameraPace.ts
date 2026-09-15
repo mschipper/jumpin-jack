@@ -4,10 +4,10 @@ export const REST_Y_MAX = 0.6;
 
 /** Answers at or under this still count as fast. */
 const FAST_MS = 1600;
-/** Hold current height until the player has lingered this long. */
-const HOLD_MS = 2200;
 const SLOW_MS = 3500;
-const SETTLE_PER_SEC = 0.16;
+/** Slow leak while thinking. Original 0.14 dropped height even on a fast streak. */
+const SETTLE_PER_SEC = 0.05;
+const SLOW_DROP = 0.12;
 
 export function restYFromPace(pace: number): number {
   const p = Math.min(1, Math.max(0, pace));
@@ -21,13 +21,11 @@ export function paceAfterAnswer(pace: number, elapsedMs: number, fromGround: boo
     const t = 1 - elapsedMs / FAST_MS;
     return Math.min(1, pace + 0.16 + t * 0.38);
   }
-  if (elapsedMs < HOLD_MS) return pace;
-  const t = Math.min(1, (elapsedMs - HOLD_MS) / (SLOW_MS - HOLD_MS));
-  return Math.max(0, pace - t * 0.24);
+  const t = Math.min(1, (elapsedMs - FAST_MS) / (SLOW_MS - FAST_MS));
+  return Math.max(0, pace - t * SLOW_DROP);
 }
 
-/** No decay while the current answer is still in the fast/hold window. */
-export function paceAfterWait(pace: number, dtSec: number, elapsedMs: number): number {
-  if (elapsedMs < HOLD_MS) return pace;
+/** Continuous slow settle while standing on a choice. */
+export function paceAfterWait(pace: number, dtSec: number): number {
   return Math.max(0, pace - SETTLE_PER_SEC * dtSec);
 }

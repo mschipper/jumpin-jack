@@ -410,7 +410,7 @@ export class PlayScene extends Phaser.Scene {
       !this.onBreak &&
       this.floor > 0
     ) {
-      this.pace = paceAfterWait(this.pace, _delta / 1000, this.time.now - this.choiceAt);
+      this.pace = paceAfterWait(this.pace, _delta / 1000);
       this.retargetCamera(this.player.worldY);
     }
 

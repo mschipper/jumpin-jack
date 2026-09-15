@@ -147,6 +147,10 @@ Moved stacked numerator, bar, and denominator down 5px so they sit lower on the 
 
 Pace no longer decays between jumps. Fast window is 1.6s; height holds until 2.2s of lingering, then settles. A ~1s rhythm stays at the top.
 
+## 2026-09-15 — Slow camera decay
+
+Hold was too sticky. Restored continuous settle, slower than the original: 0.05/s while waiting (was 0.14), 0.12 drop at a fully slow answer (was 0.24). Fast window stays 1.6s so a ~1s rhythm still climbs.
+
 
 
 
