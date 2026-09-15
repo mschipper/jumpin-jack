@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import {
-  FLOORS_PER_LEVEL,
   JUMP_ARC,
   JUMP_MS,
   SHAKE_FRACTION,
@@ -9,7 +8,8 @@ import {
   STEP,
 } from "../constants";
 import { hostEvents, externalScores } from "../host";
-import { pickPair, pairAsNumbers } from "../numbers/pair";
+import { pickPair } from "../numbers/pair";
+import { isCasualWin, shouldLevelBreak } from "../modes";
 import { randomRng } from "../numbers/rng";
 import type { ChoicePair, GameConfig, Side } from "../numbers/types";
 import { readBest, writeBest } from "../storage/best";
@@ -163,7 +163,12 @@ export class PlayScene extends Phaser.Scene {
 
   private spawnChoice(worldY: number, paused: boolean): void {
     this.choiceAt = this.time.now;
-    const pair = pickPair(Math.max(1, this.floor + 1), this.config.difficulty, randomRng);
+    const pair = pickPair(
+      Math.max(1, this.floor + 1),
+      this.config.difficulty,
+      randomRng,
+      this.config.numbers,
+    );
     this.pair = pair;
     const left = new SodPlatform(this, columnX(this, 0.27), worldY, 0.27, pair.left);
     const right = new SodPlatform(this, columnX(this, 0.73), worldY, 0.73, pair.right);
@@ -240,13 +245,8 @@ export class PlayScene extends Phaser.Scene {
       this.score += 1;
       this.floor += 1;
       const newLevel = levelForFloor(this.floor);
-      const oldLevel = levelForFloor(this.floor - 1);
       let pauseNext = false;
-      if (
-        this.config.mode === "challenge" &&
-        newLevel > oldLevel &&
-        this.floor % FLOORS_PER_LEVEL === 0
-      ) {
+      if (shouldLevelBreak(this.config.mode, this.floor)) {
         pauseNext = true;
         this.hud.setHint("JUMP WHEN READY");
         hostEvents(this).emit("level_break", { level: newLevel });
@@ -254,7 +254,7 @@ export class PlayScene extends Phaser.Scene {
         this.hud.setHint("JUMP TO THE BIGGER NUMBER");
       }
       this.hud.set(this.score, newLevel, Math.max(this.best, this.score), this.config.mode);
-      if (this.config.mode === "casual" && this.floor >= 20) {
+      if (isCasualWin(this.config.mode, this.floor)) {
         this.finish("You made it!");
         return;
       }
@@ -346,8 +346,13 @@ export class PlayScene extends Phaser.Scene {
     this.paused = false;
     this.pauseUi.hide();
     if (this.pair && this.leftPlat && this.rightPlat) {
-      const prev = pairAsNumbers(this.pair);
-      const next = pickPair(Math.max(1, this.floor + 1), this.config.difficulty, randomRng, prev);
+      const next = pickPair(
+        Math.max(1, this.floor + 1),
+        this.config.difficulty,
+        randomRng,
+        this.config.numbers,
+        this.pair,
+      );
       this.pair = next;
       this.leftPlat.setValue(next.left);
       this.rightPlat.setValue(next.right);
@@ -417,7 +422,7 @@ export class PlayScene extends Phaser.Scene {
 
     if (this.deadline !== Number.POSITIVE_INFINITY) {
       const left = this.deadline - this.time.now;
-      this.hud.setTimer(left / this.duration, this.config.mode);
+      this.hud.setTimer(left / this.duration, this.config.mode, left);
     }
 
     const now = this.time.now;

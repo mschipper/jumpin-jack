@@ -6,7 +6,17 @@ export type Side = "left" | "right";
 
 export type WholeValue = { kind: "whole"; n: number };
 
-export type GameValue = WholeValue;
+/** `value = scaled / 10^places`. `keepZeros` pads for trap pairs like 0.90 vs 0.89. */
+export type DecimalValue = {
+  kind: "decimal";
+  scaled: number;
+  places: number;
+  keepZeros?: boolean;
+};
+
+export type FractionValue = { kind: "fraction"; num: number; den: number };
+
+export type GameValue = WholeValue | DecimalValue | FractionValue;
 
 export type Rng = () => number;
 

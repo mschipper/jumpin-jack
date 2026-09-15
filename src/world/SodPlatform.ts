@@ -19,6 +19,9 @@ export class SodPlatform {
   private tagText: Phaser.GameObjects.Text;
   private tagBg: Phaser.GameObjects.Rectangle;
   private tagPin: Phaser.GameObjects.Arc;
+  private fracNum: Phaser.GameObjects.Text;
+  private fracBar: Phaser.GameObjects.Rectangle;
+  private fracDen: Phaser.GameObjects.Text;
   readonly hit: Phaser.GameObjects.Zone;
   private shakeTween?: Phaser.Tweens.Tween;
 
@@ -49,9 +52,26 @@ export class SodPlatform {
     this.tagBg.setStrokeStyle(0, NAVY);
     this.tagPin = scene.add.circle(0, GRASS_H + 8, 5, 0xe85d4c);
     this.tagText = scene.add
-      .text(0, GRASS_H + 26, value ? formatValue(value) : "", {
+      .text(0, GRASS_H + 26, "", {
         fontFamily: "Nunito, sans-serif",
-        fontSize: value && formatValue(value).length > 5 ? "16px" : "22px",
+        fontSize: "22px",
+        color: "#16324f",
+        fontStyle: "800",
+      })
+      .setOrigin(0.5);
+    this.fracNum = scene.add
+      .text(0, GRASS_H + 16, "", {
+        fontFamily: "Nunito, sans-serif",
+        fontSize: "16px",
+        color: "#16324f",
+        fontStyle: "800",
+      })
+      .setOrigin(0.5);
+    this.fracBar = scene.add.rectangle(0, GRASS_H + 26, 22, 3, 0x16324f);
+    this.fracDen = scene.add
+      .text(0, GRASS_H + 36, "", {
+        fontFamily: "Nunito, sans-serif",
+        fontSize: "16px",
         color: "#16324f",
         fontStyle: "800",
       })
@@ -69,6 +89,9 @@ export class SodPlatform {
       this.tagBg,
       this.tagPin,
       this.tagText,
+      this.fracNum,
+      this.fracBar,
+      this.fracDen,
       this.hit,
     ]);
     this.container.setDepth(8);
@@ -76,7 +99,7 @@ export class SodPlatform {
     if (value) {
       this.hit.setInteractive({ useHandCursor: true });
     }
-    this.setTagVisible(Boolean(value));
+    this.setValue(value);
   }
 
   setValue(value: GameValue | null): void {
@@ -86,16 +109,33 @@ export class SodPlatform {
       this.setTagVisible(false);
       return;
     }
-    const label = formatValue(value);
-    this.tagText.setText(label);
-    this.tagText.setFontSize(label.length > 5 ? 16 : 22);
+    const frac = value.kind === "fraction";
+    this.tagBg.setSize(88, frac ? 48 : 36);
+    this.tagBg.y = GRASS_H + (frac ? 30 : 26);
+    if (frac) {
+      this.tagText.setText("");
+      this.fracNum.setText(String(value.num));
+      this.fracDen.setText(String(value.den));
+      const w = Math.max(18, Math.max(this.fracNum.width, this.fracDen.width) + 8);
+      this.fracBar.setSize(w, 3);
+    } else {
+      const label = formatValue(value);
+      this.tagText.setText(label);
+      this.tagText.setFontSize(label.length > 5 ? 16 : 22);
+      this.fracNum.setText("");
+      this.fracDen.setText("");
+    }
     this.setTagVisible(true);
   }
 
   setTagVisible(on: boolean): void {
     this.tagBg.setVisible(on);
     this.tagPin.setVisible(on);
-    this.tagText.setVisible(on);
+    const frac = on && this.value?.kind === "fraction";
+    this.tagText.setVisible(on && !frac);
+    this.fracNum.setVisible(frac);
+    this.fracBar.setVisible(frac);
+    this.fracDen.setVisible(frac);
   }
 
   startShake(scene: Phaser.Scene): void {

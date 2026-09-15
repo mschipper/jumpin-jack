@@ -114,9 +114,9 @@ export class MenuScene extends Phaser.Scene {
         .rectangle(startX + i * gap, y + 32, 108, 44, on ? GOLD : NAVY, on ? 1 : 0.72)
         .setInteractive({ useHandCursor: true });
       this.add
-        .text(startX + i * gap, y + 32, cap(opt), {
+        .text(startX + i * gap, y + 32, labelFor(opt), {
           fontFamily: "Nunito, sans-serif",
-          fontSize: "14px",
+          fontSize: "13px",
           color: on ? "#1d3557" : "#fff8e7",
         })
         .setOrigin(0.5);
@@ -144,6 +144,18 @@ export class MenuScene extends Phaser.Scene {
   }
 }
 
-function cap(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+const LABELS: Record<string, string> = {
+  whole: "Whole",
+  decimal: "Decimal",
+  fraction: "Fractions",
+  easy: "Easy",
+  normal: "Normal",
+  hard: "Hard",
+  casual: "Casual",
+  challenge: "Challenge",
+  speed: "Speed run",
+};
+
+function labelFor(s: string): string {
+  return LABELS[s] ?? s.charAt(0).toUpperCase() + s.slice(1);
 }

@@ -127,6 +127,14 @@ Sheet has no idle loop. Standing cell (frame 0) now has a 2px sine y-bob, 1100ms
 
 Stand-pad rest height follows answer speed: fast jumps raise `pace` (pad sits up to 60% from the bottom), waiting and slow answers ease it back to 22%. First ground jump does not bump pace.
 
+## 2026-09-15 — Phase 3 start
+
+Decimal + fraction generators, stacked fraction tags, easy/hard already in whole tables, Casual/Speed Run polish, URL params, tests for all generators and mode rules.
+
+## 2026-09-15 — Phase 3 playable
+
+Whole/decimal/fraction × easy/normal/hard generators (never equal, 6-digit decimal cap, proper fractions den 2–12, cross-multiply compare). Stacked fraction tags. Casual win at 20. Speed run: no level breaks, thicker timer + seconds once the clock starts. URL params skip only the fields provided. 30 unit tests.
+
 
 
 

@@ -1,26 +1,55 @@
-import type { ChoicePair, Difficulty, GameValue } from "./types";
+import type { ChoicePair, Difficulty, GameValue, NumberKind } from "./types";
+import { compare, samePair } from "./compare";
 import { pickWholePair } from "./whole";
+import { pickDecimalPair } from "./decimal";
+import { pickFractionPair } from "./fraction";
 import type { Rng } from "./rng";
 
 export function pickPair(
   floor: number,
   difficulty: Difficulty,
   rng: Rng,
-  exclude?: [number, number],
+  numbers: NumberKind = "whole",
+  exclude?: ChoicePair,
 ): ChoicePair {
-  const [a, b] = pickWholePair(floor, difficulty, rng, exclude);
-  const leftFirst = rng() < 0.5;
-  const leftN = leftFirst ? a : b;
-  const rightN = leftFirst ? b : a;
-  const left: GameValue = { kind: "whole", n: leftN };
-  const right: GameValue = { kind: "whole", n: rightN };
-  return {
-    left,
-    right,
-    bigger: leftN > rightN ? "left" : "right",
-  };
+  for (let i = 0; i < 30; i++) {
+    const [A, B] = rawPair(floor, difficulty, rng, numbers);
+    const leftFirst = rng() < 0.5;
+    const left = leftFirst ? A : B;
+    const right = leftFirst ? B : A;
+    if (exclude && samePair(left, right, exclude)) continue;
+    if (compare(left, right) === 0) continue;
+    return {
+      left,
+      right,
+      bigger: compare(left, right) > 0 ? "left" : "right",
+    };
+  }
+  const fallback: GameValue = { kind: "whole", n: 1 };
+  const other: GameValue = { kind: "whole", n: 2 };
+  return { left: fallback, right: other, bigger: "right" };
+}
+
+function rawPair(
+  floor: number,
+  difficulty: Difficulty,
+  rng: Rng,
+  numbers: NumberKind,
+): [GameValue, GameValue] {
+  if (numbers === "decimal") return pickDecimalPair(floor, difficulty, rng);
+  if (numbers === "fraction") return pickFractionPair(floor, difficulty, rng);
+  const [a, b] = pickWholePair(floor, difficulty, rng);
+  return [
+    { kind: "whole", n: a },
+    { kind: "whole", n: b },
+  ];
 }
 
 export function pairAsNumbers(pair: ChoicePair): [number, number] {
-  return [pair.left.n, pair.right.n];
+  const n = (v: GameValue) => {
+    if (v.kind === "whole") return v.n;
+    if (v.kind === "decimal") return v.scaled / 10 ** v.places;
+    return v.num / v.den;
+  };
+  return [n(pair.left), n(pair.right)];
 }
