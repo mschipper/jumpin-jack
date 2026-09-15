@@ -39,11 +39,19 @@ export class MenuScene extends Phaser.Scene {
 
     const x = columnLeft(this) + PLAY_COLUMN / 2;
     const hasOptions = this.openFields.length > 0;
-    const howToY = 108;
-    const howToH = 118;
-    const optsY = howToY + howToH / 2 + 40;
-    const startY = hasOptions ? optsY + 64 : optsY;
-    const blockH = startY + 36;
+    const pad = 22;
+    const startH = 52;
+    const optsH = 44;
+    const btnGap = 12;
+    const textBlock = 88;
+    const cardH =
+      pad + textBlock + (hasOptions ? optsH + btnGap : 0) + startH + pad;
+    const cardTop = 58;
+    const cardCy = cardTop + cardH / 2;
+    const cardBottom = cardTop + cardH;
+    const startY = cardBottom - pad - startH / 2;
+    const optsY = startY - startH / 2 - btnGap - optsH / 2;
+    const blockH = cardBottom;
     const gTop = this.scale.height - 110;
     const top = Math.round(
       Phaser.Math.Clamp(
@@ -73,9 +81,9 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(UI);
 
-    addPaperCard(this, x, top + howToY, PLAY_COLUMN - 64, howToH, 18).setDepth(UI);
+    addPaperCard(this, x, top + cardCy, PLAY_COLUMN - 56, cardH, 20).setDepth(UI);
     this.add
-      .text(x, top + howToY - 22, "Jump to the bigger number\nbefore the pad gives way.", {
+      .text(x, top + cardTop + 32, "Jump to the bigger number\nbefore the pad gives way.", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "16px",
         color: "#16324f",
@@ -84,7 +92,7 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(UI);
     this.add
-      .text(x, top + howToY + 28, "Tap a platform  ·  arrows / A D", {
+      .text(x, top + cardTop + 76, "Tap a platform  ·  arrows / A D", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "13px",
         color: "#5a6d80",
@@ -95,7 +103,7 @@ export class MenuScene extends Phaser.Scene {
 
     if (hasOptions) {
       const opts = this.add
-        .rectangle(x, top + optsY, 200, 44, NAVY, 0.82)
+        .rectangle(x, top + optsY, 200, optsH, NAVY, 0.88)
         .setInteractive({ useHandCursor: true })
         .setDepth(UI);
       this.add
@@ -113,13 +121,13 @@ export class MenuScene extends Phaser.Scene {
     }
 
     const start = this.add
-      .rectangle(x, top + startY, 240, 56, GOLD)
+      .rectangle(x, top + startY, 220, startH, GOLD)
       .setInteractive({ useHandCursor: true })
       .setDepth(UI);
     this.add
       .text(x, top + startY, "Start Climb", {
         fontFamily: "Fredoka, sans-serif",
-        fontSize: "24px",
+        fontSize: "22px",
         color: "#1d3557",
       })
       .setOrigin(0.5)
