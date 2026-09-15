@@ -12,6 +12,7 @@ import type {
 import { columnLeft } from "../world/column";
 import { Sky } from "../world/Sky";
 import { addPaperCard } from "../ui/paperCard";
+import { drawTitleLayout, hitTitle, type TitleHit } from "../ui/titleLayouts";
 
 export class MenuScene extends Phaser.Scene {
   private numbers: NumberKind = "whole";
@@ -20,6 +21,8 @@ export class MenuScene extends Phaser.Scene {
   private sky!: Sky;
   private panel: Phaser.GameObjects.Container | null = null;
   private openFields: (keyof GameConfig)[] = [];
+  private chrome: Phaser.GameObjects.GameObject[] = [];
+  private hits: TitleHit[] = [];
 
   constructor() {
     super("menu");
@@ -36,118 +39,38 @@ export class MenuScene extends Phaser.Scene {
     this.sky = new Sky(this);
     this.scale.on("resize", this.onResize, this);
     this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
+    this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => this.onPointer(pointer));
 
-    const x = columnLeft(this) + PLAY_COLUMN / 2;
-    const hasOptions = this.openFields.length > 0;
-    const pad = 22;
-    const startH = 52;
-    const optsH = 44;
-    const btnGap = 12;
-    const textBlock = 88;
-    const cardH =
-      pad + textBlock + (hasOptions ? optsH + btnGap : 0) + startH + pad;
-    const cardTop = 58;
-    const cardCy = cardTop + cardH / 2;
-    const cardBottom = cardTop + cardH;
-    const startY = cardBottom - pad - startH / 2;
-    const optsY = startY - startH / 2 - btnGap - optsH / 2;
-    const blockH = cardBottom;
-    const gTop = this.scale.height - 110;
-    const top = Math.round(
-      Phaser.Math.Clamp(
-        (this.scale.height - blockH) / 2,
-        36,
-        Math.max(36, gTop - 120 - blockH),
-      ),
-    );
+    this.rebuild();
+  }
 
-    const UI = 20;
-    this.add
-      .text(x + 4, top + 4, "Jumpin' Jack", {
-        fontFamily: "Titan One, sans-serif",
-        fontSize: "56px",
-        color: "#16324f",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-    this.add
-      .text(x, top, "Jumpin' Jack", {
-        fontFamily: "Titan One, sans-serif",
-        fontSize: "56px",
-        color: "#fff8e7",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-
-    addPaperCard(this, x, top + cardCy, PLAY_COLUMN - 56, cardH, 20).setDepth(UI);
-    this.add
-      .text(x, top + cardTop + 32, "Jump to the bigger number\nbefore the pad gives way.", {
-        fontFamily: "Nunito, sans-serif",
-        fontSize: "16px",
-        color: "#16324f",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-    this.add
-      .text(x, top + cardTop + 76, "Tap a platform  ·  arrows / A D", {
-        fontFamily: "Nunito, sans-serif",
-        fontSize: "13px",
-        color: "#5a6d80",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-
-    if (hasOptions) {
-      const opts = this.add
-        .rectangle(x, top + optsY, 200, optsH, NAVY, 0.88)
-        .setInteractive({ useHandCursor: true })
-        .setDepth(UI);
-      this.add
-        .text(x, top + optsY, "Game options", {
-          fontFamily: "Nunito, sans-serif",
-          fontSize: "16px",
-          color: "#fff8e7",
-        })
-        .setOrigin(0.5)
-        .setDepth(UI);
-      opts.on("pointerup", () => {
-        soundsOf(this).play("button_press");
-        this.showOptions();
-      });
-    }
-
-    const start = this.add
-      .rectangle(x, top + startY, 220, startH, GOLD)
-      .setInteractive({ useHandCursor: true })
-      .setDepth(UI);
-    this.add
-      .text(x, top + startY, "Start Climb", {
-        fontFamily: "Fredoka, sans-serif",
-        fontSize: "22px",
-        color: "#1d3557",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-    start.on("pointerup", () => {
-      if (this.panel?.visible) return;
-      soundsOf(this).play("button_press");
-      this.begin();
+  private rebuild(): void {
+    this.panel?.destroy();
+    this.panel = null;
+    for (const obj of this.chrome) obj.destroy();
+    this.chrome = [];
+    this.hits = [];
+    drawTitleLayout({
+      scene: this,
+      x: columnLeft(this) + PLAY_COLUMN / 2,
+      hasOptions: this.openFields.length > 0,
+      add: (obj) => {
+        this.chrome.push(obj);
+        return obj;
+      },
+      hit: (h) => {
+        this.hits.push(h);
+      },
     });
+  }
 
-    const dirt = this.add.graphics();
-    dirt.setDepth(8);
-    dirt.fillStyle(0xc9a066, 1);
-    dirt.fillRect(0, gTop + 16, this.scale.width, 200);
-    dirt.fillStyle(0x6fbf3b, 1);
-    dirt.fillRect(0, gTop, this.scale.width, 22);
-    const hero = this.add.sprite(x, gTop, "adventurer", 0).setOrigin(0.5, 1);
-    hero.setScale(1);
-    hero.setDepth(8);
-    hero.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+  private onPointer(pointer: Phaser.Input.Pointer): void {
+    if (this.panel?.visible) return;
+    const hit = hitTitle(this.hits, pointer.x, pointer.y);
+    if (!hit) return;
+    soundsOf(this).play("button_press");
+    if (hit.kind === "start") this.begin();
+    else this.showOptions();
   }
 
   private showOptions(): void {
@@ -288,14 +211,14 @@ export class MenuScene extends Phaser.Scene {
 
   private onResize(): void {
     this.sky.layout();
-    if (this.panel) this.panel.x = columnLeft(this);
+    this.rebuild();
   }
 }
 
 const LABELS: Record<string, string> = {
   whole: "Whole",
   decimal: "Decimal",
-  fraction: "Fractions",
+  fraction: "Fraction",
   easy: "Easy",
   normal: "Normal",
   hard: "Hard",

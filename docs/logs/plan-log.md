@@ -197,6 +197,86 @@ Title screen wordmark is Titan One. How-to and controls sit in a paper panel. Ga
 
 Bigger Paytone wordmark on the title screen. Settings live behind a Game options panel that only lists fields not locked by URL/host. Player picks no longer overwrite `partialConfig`, so Menu can still change unlocked settings.
 
+## 2026-09-15 — Resume: control copy
+
+Title how-to now says "Tap a platform or use keyboard arrows" (was "Tap a platform · arrows / A D").
+
+## 2026-09-15 — Gold wordmark
+
+Title foreground is Start Climb gold `#ffd166` instead of cream `#fff8e7`, so white clouds no longer wash it out. Navy offset shadow is unchanged.
+
+## 2026-09-15 — Phase 5 start
+
+Juice: mild jump camera rattle, land squash/stretch, crumble debris, light landing puff. No HUD streak popup (would fight the pills). Tune down, not up.
+
+Planned steps:
+1. Shake magnitude helper + tests; apply extra camera scroll on takeoff (do not change pad SHAKE_PX).
+2. Player jump stretch + land squash, then idle bob.
+3. In-engine paper debris on crumble; cream puff on land.
+4. Verify tests/build; playtest.
+
+## 2026-09-15 — Phase 5 juice
+
+Mild takeoff rattle via extra camera scroll (90ms, 3px quadratic decay) so it does not fight `setScroll` or the pad's 2px timer shake. Jump stretch 0.92/1.10, land squash 1.14/0.86 then bob. Six kraft/grass scraps on crumble. Three cream puffs on land. No streak popup — HUD pills are already tight. 41 tests. `tsc` clean. Tune down if the rattle or squash feels big.
+
+## 2026-09-15 — Challenge level-complete interlude
+
+On each Challenge 20-pad break, pop a gold "Level Complete!" banner, lock input ~1.5s, then "JUMP WHEN READY". Next pair is visible; timer stays frozen. Tiny HUD hint removed for this.
+
+## 2026-09-15 — Pause overlay clicks
+
+Resume / mute / Change setup did not receive Phaser 4 container pointer events, and the scene `pointerup` returned as soon as the game was paused. Overlay actions now use the same screen-space hit test as the HUD pause button.
+
+## 2026-09-15 — Title layout options
+
+Three in-game title layouts with A/B/C chips (also `?title=a|b|c`): A Poster (stacked wordmark + manila tag, CTAs in the sky, hero on grass), B Ticket (horizontal climb pass with Start as a tear-off stub), C Dock (sky wordmark + how-to, paper CTA bar on the ground). Waiting on Mike's pick.
+
+## 2026-09-15 — Poster spacing
+
+Mike picked A. Wordmark / tag / buttons now use the sky between the picker and the adventurer (18% / 46% / 84%) instead of sitting in a clump at the top.
+
+## 2026-09-15 — Larger how-to tag
+
+Poster manila tag is 328×108; how-to 18px, controls 14px (was 280×78 / 14 / 11).
+
+## 2026-09-15 — Title locked to Poster
+
+Removed A/B/C picker, Ticket, and Dock. Title screen is Poster only. `?title=` is ignored.
+
+## 2026-09-15 — Phase 6 start
+
+Content pass. Inventory every player-facing string; Mike confirms; fix in one pass.
+
+Planned steps:
+1. List title, menus, HUD, hints, pause, results, cheers, empty/error states.
+2. Flag mismatches (caps, Change setup vs Menu, how-to variants).
+3. Apply Mike’s edits in one pass.
+
+## 2026-09-15 — Phase 6 copy edits
+
+How-to: “before the platform gives way.” HUD Lv → Level. Pause no longer has Change setup (Resume + mute only; Menu stays on results). Options label Fractions → Fraction.
+
+## 2026-09-15 — Phase 7 start
+
+Player/dev README + `docs/INTEGRATION.md` so another agent can vendor this into LearningPlanet using `integrate-standalone-game`, including the Phaser 4 difference.
+
+Planned steps:
+1. Inventory host seam, events, assets, URL params, score meta from live code.
+2. Rewrite `README.md` (run, params, tests).
+3. Write `docs/INTEGRATION.md` (slug, host, sounds, sync sketch, do not rewrite `phaser` → `phaser3`).
+
+## 2026-09-15 — Phase 7 complete
+
+`README.md` is player/dev (run, params, modes). `docs/INTEGRATION.md` is the LP vendoring playbook: slug `jumpin-jack`, host/`sounds` registry, URL table, asset list, score meta + 27 `contentSlug`s, events, Phaser 4 (do not rewrite imports to `phaser3`), sync sketch that skips `main.ts` / `index.html`, audio adapter including pause/resume/stopSfx, fonts the wrapper must load. Another agent can integrate without this plan.
+
+## 2026-09-15 — Repo cleanup
+
+Removed unused Foozle robot pack, `RobotSpriteSheets/`, `.DS_Store`, `greater-heights.html`, and `Greater Heights — agent handoff.md`. Then removed `audio/` sources, `reference assets/` (audio pack + adventurer tilesheet), and `docs/asset-map.md`. Runtime assets stay in `public/assets/`.
+
+## 2026-09-15 — Game-card hero
+
+`docs/hero.png` (1280×720). Gold Titan One title, cut-paper clouds, sod pads tagged 7 and 12, adventurer jump sprite landing on 12. Built in HTML so the title and numbers stay exact (`docs/hero.html`).
+
 
 
 

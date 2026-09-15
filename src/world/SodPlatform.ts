@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { NAVY, SHAKE_PX } from "../constants";
 import { formatValue } from "../numbers/format";
 import type { GameValue } from "../numbers/types";
+import { spawnCrumbleDebris } from "./fx";
 
 const W = 176;
 const DIRT_H = 72;
@@ -169,6 +170,7 @@ export class SodPlatform {
     this.gone = true;
     this.shakeTween?.stop();
     this.hit.disableInteractive();
+    spawnCrumbleDebris(scene, this.container.x, this.container.y + 20);
     scene.tweens.add({
       targets: this.container,
       y: this.container.y + 110,

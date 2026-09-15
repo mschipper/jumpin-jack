@@ -25,7 +25,7 @@ export class Hud {
 
   constructor(scene: Phaser.Scene, onPause: () => void) {
     const left = columnLeft(scene);
-    this.levelPill = makePill(scene, "Lv", "1");
+    this.levelPill = makePill(scene, "Level", "1");
     this.scorePill = makePill(scene, "Score", "0");
     this.bestPill = makePill(scene, "Best", "0");
 

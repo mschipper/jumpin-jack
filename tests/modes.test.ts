@@ -1,4 +1,10 @@
 import { describe, expect, it } from "vitest";
+import {
+  LEVEL_BREAK_MS,
+  LEVEL_BREAK_READY,
+  levelBreakHeadline,
+  levelBreakLevelLine,
+} from "../src/levelBreak";
 import { isCasualWin, shouldLevelBreak, timerProminent } from "../src/modes";
 import { timeForFloor } from "../src/timer";
 
@@ -16,6 +22,13 @@ describe("mode rules", () => {
     expect(shouldLevelBreak("challenge", 19)).toBe(false);
     expect(shouldLevelBreak("speed", 20)).toBe(false);
     expect(shouldLevelBreak("casual", 20)).toBe(false);
+  });
+
+  it("names the Challenge rest banner", () => {
+    expect(levelBreakHeadline()).toBe("Level Complete!");
+    expect(levelBreakLevelLine(2)).toBe("Level 2");
+    expect(LEVEL_BREAK_READY).toBe("JUMP WHEN READY");
+    expect(LEVEL_BREAK_MS).toBeGreaterThanOrEqual(1200);
   });
 
   it("speed uses a tighter timer than challenge", () => {

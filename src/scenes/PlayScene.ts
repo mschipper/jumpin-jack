@@ -1,5 +1,15 @@
 import Phaser from "phaser";
-import { JUMP_ARC, JUMP_MS, PAD_LEFT, PAD_RIGHT, SHAKE_FRACTION, STEP } from "../constants";
+import {
+  JUMP_ARC,
+  JUMP_MS,
+  JUMP_SHAKE_MS,
+  JUMP_SHAKE_PX,
+  PAD_LEFT,
+  PAD_RIGHT,
+  SHAKE_FRACTION,
+  STEP,
+} from "../constants";
+import { shakeMagnitude } from "../juice";
 import { soundsOf } from "../audio/SoundManager";
 import { cheerForScore } from "../cheers";
 import { hostEvents, externalScores } from "../host";
@@ -10,11 +20,14 @@ import type { ChoicePair, GameConfig, Side } from "../numbers/types";
 import { readBest, writeBest } from "../storage/best";
 import { paceAfterAnswer, paceAfterWait, restYFromPace } from "../cameraPace";
 import { levelForFloor, timeForFloor } from "../timer";
+import { LEVEL_BREAK_MS } from "../levelBreak";
 import { Hud } from "../ui/Hud";
+import { LevelBreakBanner } from "../ui/LevelBreakBanner";
 import { PauseOverlay } from "../pause/PauseOverlay";
 import { columnX, playHeight } from "../world/column";
 import { Player } from "../world/Player";
 import { Sky } from "../world/Sky";
+import { spawnLandPuff } from "../world/fx";
 import { SodPlatform } from "../world/SodPlatform";
 
 export class PlayScene extends Phaser.Scene {
@@ -47,6 +60,9 @@ export class PlayScene extends Phaser.Scene {
   private groundTop = 0;
   private startHint: Phaser.GameObjects.Text | null = null;
   private pauseAt = 0;
+  private shakeAt = 0;
+  private breakBanner: LevelBreakBanner | null = null;
+  private breakTimer?: Phaser.Time.TimerEvent;
 
   constructor() {
     super("climb");
@@ -67,20 +83,14 @@ export class PlayScene extends Phaser.Scene {
     this.onBreak = false;
     this.platforms = [];
     this.pace = 0;
+    this.shakeAt = 0;
 
     this.sky = new Sky(this);
     this.drawGround();
     soundsOf(this).playMusic();
     this.player = new Player(this);
     this.hud = new Hud(this, () => this.togglePause());
-    this.pauseUi = new PauseOverlay(
-      this,
-      () => this.togglePause(),
-      () => {
-        soundsOf(this).stopMusic();
-        this.scene.start("menu");
-      },
-    );
+    this.pauseUi = new PauseOverlay(this, () => this.togglePause());
 
     this.groundTop = playHeight(this) - 120;
     this.player.place(columnX(this, 0.5), this.groundTop);
@@ -97,7 +107,10 @@ export class PlayScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown", (e: KeyboardEvent) => this.onKey(e));
     this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => this.onPointer(pointer));
     this.scale.on("resize", this.onResize, this);
-    this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
+    this.events.once("shutdown", () => {
+      this.scale.off("resize", this.onResize, this);
+      this.clearLevelBreak(true);
+    });
     hostEvents(this).emit("game_start", { ...this.config });
   }
 
@@ -169,7 +182,11 @@ export class PlayScene extends Phaser.Scene {
       this.togglePause();
       return;
     }
-    if (this.paused || this.busy || this.falling || this.jumping || !this.pair) return;
+    if (this.paused) {
+      this.pauseUi.handlePointer(pointer.x, pointer.y);
+      return;
+    }
+    if (this.busy || this.falling || this.jumping || !this.pair) return;
     const pt = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
     const over = (p: SodPlatform | null) => {
       if (!p || p.gone) return false;
@@ -196,6 +213,7 @@ export class PlayScene extends Phaser.Scene {
     const target = side === "left" ? this.leftPlat : this.rightPlat;
     const other = side === "left" ? this.rightPlat : this.leftPlat;
     if (!target || !other) return;
+    this.clearLevelBreak();
     this.busy = true;
     this.pace = paceAfterAnswer(this.pace, this.time.now - this.choiceAt, this.floor === 0);
 
@@ -217,15 +235,8 @@ export class PlayScene extends Phaser.Scene {
       this.score += 1;
       this.floor += 1;
       const newLevel = levelForFloor(this.floor);
-      let pauseNext = false;
-      if (shouldLevelBreak(this.config.mode, this.floor)) {
-        pauseNext = true;
-        this.hud.setHint("JUMP WHEN READY");
-        soundsOf(this).play("level_complete");
-        hostEvents(this).emit("level_break", { level: newLevel });
-      } else {
-        this.hud.setHint("");
-      }
+      const pauseNext = shouldLevelBreak(this.config.mode, this.floor);
+      this.hud.setHint("");
       this.hud.set(this.score, newLevel, Math.max(this.best, this.score), this.config.mode);
       if (isCasualWin(this.config.mode, this.floor)) {
         soundsOf(this).play("level_complete");
@@ -237,15 +248,22 @@ export class PlayScene extends Phaser.Scene {
       this.rightPlat = null;
       this.pair = null;
       this.spawnChoice(destY - STEP, pauseNext);
-      this.busy = false;
       this.prunePlatforms();
       hostEvents(this).emit("platform_landed", { floor: this.floor });
+      if (pauseNext) {
+        soundsOf(this).play("level_complete");
+        hostEvents(this).emit("level_break", { level: newLevel });
+        this.beginLevelBreak(newLevel);
+        return;
+      }
+      this.busy = false;
     });
   }
 
   private startJump(toX: number, toY: number, onLand: () => void): void {
     this.jumping = true;
     this.player.jump();
+    this.shakeAt = this.time.now;
     const fromX = this.player.worldX;
     const fromY = this.player.worldY;
     this.retargetCamera(toY);
@@ -264,7 +282,8 @@ export class PlayScene extends Phaser.Scene {
       },
       onComplete: () => {
         this.player.place(toX, toY);
-        this.player.idle();
+        this.player.land();
+        spawnLandPuff(this, toX, toY);
         this.jumping = false;
         onLand();
       },
@@ -371,6 +390,7 @@ export class PlayScene extends Phaser.Scene {
     this.paintGround();
     this.hud.layout(this);
     this.pauseUi.layout(this);
+    this.breakBanner?.layout();
     if (this.leftPlat) this.leftPlat.container.x = columnX(this, PAD_LEFT);
     if (this.rightPlat) this.rightPlat.container.x = columnX(this, PAD_RIGHT);
     if (this.startHint) {
@@ -411,6 +431,25 @@ export class PlayScene extends Phaser.Scene {
     });
   }
 
+  private beginLevelBreak(nextLevel: number): void {
+    this.clearLevelBreak(true);
+    this.breakBanner = new LevelBreakBanner(this);
+    this.breakBanner.play(nextLevel);
+    this.breakTimer = this.time.delayedCall(LEVEL_BREAK_MS, () => {
+      this.breakBanner?.showReady();
+      this.busy = false;
+    });
+  }
+
+  private clearLevelBreak(immediate = false): void {
+    this.breakTimer?.remove(false);
+    this.breakTimer = undefined;
+    if (!this.breakBanner) return;
+    if (immediate) this.breakBanner.destroy();
+    else this.breakBanner.hide();
+    this.breakBanner = null;
+  }
+
   private retargetCamera(standWorldY: number): void {
     const h = playHeight(this);
     this.cameraTarget = standWorldY - h * (1 - restYFromPace(this.pace));
@@ -430,7 +469,18 @@ export class PlayScene extends Phaser.Scene {
 
     const camErr = this.cameraTarget - this.cameraY;
     this.cameraY += camErr * Math.min(1, (_delta / 1000) * 6);
-    this.cameras.main.setScroll(0, this.cameraY);
+    let sx = 0;
+    let sy = 0;
+    if (!this.paused && this.shakeAt > 0) {
+      const mag = shakeMagnitude(this.time.now - this.shakeAt, JUMP_SHAKE_MS, JUMP_SHAKE_PX);
+      if (mag <= 0) {
+        this.shakeAt = 0;
+      } else {
+        sx = (Math.random() * 2 - 1) * mag;
+        sy = (Math.random() * 2 - 1) * mag;
+      }
+    }
+    this.cameras.main.setScroll(sx, this.cameraY + sy);
     this.sky.update(_delta, this.cameraY, this.paused);
 
     if (this.paused || this.falling || this.onBreak || this.config.mode === "casual") {

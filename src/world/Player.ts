@@ -13,23 +13,24 @@ export class Player {
   worldX = 0;
   worldY = 0;
   private readonly scene: Phaser.Scene;
+  private readonly baseScale = PLAYER_DISPLAY_WIDTH / 80;
   private bob = 0;
   private readonly bobState = { y: 0 };
   private bobTween?: Phaser.Tweens.Tween;
+  private scaleTween?: Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    const scale = PLAYER_DISPLAY_WIDTH / 80;
     this.shadow = scene.add.sprite(0, 0, "adventurer", 0);
     this.shadow.setOrigin(0.5, 1);
-    this.shadow.setScale(scale);
+    this.shadow.setScale(this.baseScale);
     this.shadow.setTint(SHADOW_COLOR);
     this.shadow.setAlpha(SHADOW_ALPHA);
     this.shadow.setDepth(9);
 
     this.sprite = scene.add.sprite(0, 0, "adventurer", 0);
     this.sprite.setOrigin(0.5, 1);
-    this.sprite.setScale(scale);
+    this.sprite.setScale(this.baseScale);
     this.sprite.setDepth(10);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.shadow.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -69,6 +70,17 @@ export class Player {
     this.stopBob();
     this.sprite.play("jump", true);
     this.shadow.play("jump", true);
+    this.setDrawScale(0.92, 1.1);
+    this.tweenScale(1, 1, 180, "Quad.easeOut");
+  }
+
+  land(): void {
+    this.sprite.anims.stop();
+    this.shadow.anims.stop();
+    this.sprite.setFrame(0);
+    this.shadow.setFrame(0);
+    this.setDrawScale(1.14, 0.86);
+    this.tweenScale(1, 1, 140, "Back.easeOut", () => this.startBob());
   }
 
   place(x: number, y: number): void {
@@ -110,8 +122,35 @@ export class Player {
     );
   }
 
+  private setDrawScale(sx: number, sy: number): void {
+    this.sprite.setScale(this.baseScale * sx, this.baseScale * sy);
+    this.shadow.setScale(this.baseScale * sx, this.baseScale * sy);
+  }
+
+  private tweenScale(
+    sx: number,
+    sy: number,
+    duration: number,
+    ease: string,
+    onComplete?: () => void,
+  ): void {
+    this.scaleTween?.stop();
+    this.scaleTween = this.scene.tweens.add({
+      targets: [this.sprite, this.shadow],
+      scaleX: this.baseScale * sx,
+      scaleY: this.baseScale * sy,
+      duration,
+      ease,
+      onComplete: () => {
+        this.scaleTween = undefined;
+        onComplete?.();
+      },
+    });
+  }
+
   destroy(): void {
     this.stopBob();
+    this.scaleTween?.stop();
     this.sprite.destroy();
     this.shadow.destroy();
   }

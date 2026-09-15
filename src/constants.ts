@@ -10,6 +10,9 @@ export const JUMP_MS = 480;
 export const JUMP_ARC = 90;
 export const SHAKE_FRACTION = 0.28;
 export const SHAKE_PX = 2;
+/** Jump camera rattle. Keep milder than the pad's 2px timer shake. */
+export const JUMP_SHAKE_MS = 90;
+export const JUMP_SHAKE_PX = 3;
 export const PLAYER_DISPLAY_WIDTH = 80;
 export const SHADOW_OFFSET_X = 2;
 export const SHADOW_OFFSET_Y = 4;
