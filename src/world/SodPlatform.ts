@@ -60,16 +60,16 @@ export class SodPlatform {
       })
       .setOrigin(0.5);
     this.fracNum = scene.add
-      .text(0, GRASS_H + 22, "", {
+      .text(0, GRASS_H + 27, "", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "28px",
         color: "#16324f",
         fontStyle: "800",
       })
       .setOrigin(0.5);
-    this.fracBar = scene.add.rectangle(0, GRASS_H + 38, 28, 4, 0x16324f);
+    this.fracBar = scene.add.rectangle(0, GRASS_H + 43, 28, 4, 0x16324f);
     this.fracDen = scene.add
-      .text(0, GRASS_H + 54, "", {
+      .text(0, GRASS_H + 59, "", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "28px",
         color: "#16324f",

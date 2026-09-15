@@ -139,6 +139,10 @@ Whole/decimal/fraction × easy/normal/hard generators (never equal, 6-digit deci
 
 Stacked fraction type is 28px on a taller tag. URL/host `min` and `max` (aliases `minValue`/`maxValue`) clamp generated values; not required to skip the menu. Best-score key includes the range when set.
 
+## 2026-09-15 — Fraction tag spacing
+
+Moved stacked numerator, bar, and denominator down 5px so they sit lower on the card.
+
 
 
 
