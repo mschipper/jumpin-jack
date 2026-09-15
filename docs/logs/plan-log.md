@@ -191,7 +191,7 @@ Pause hit was an alpha-0 circle inside a Phaser 4 container (same miss as pads);
 
 ## 2026-09-15 — Adventurous wordmark
 
-Title screen “Jumpin' Jack” uses Luckiest Guy instead of Paytone One.
+Title screen wordmark is Titan One. How-to and controls sit in a paper panel. Game options is above Start Climb.
 
 ## 2026-09-15 — Title screen and Game options
 

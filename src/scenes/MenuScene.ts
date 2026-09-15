@@ -39,11 +39,11 @@ export class MenuScene extends Phaser.Scene {
 
     const x = columnLeft(this) + PLAY_COLUMN / 2;
     const hasOptions = this.openFields.length > 0;
-    const subY = 70;
-    const startY = 162;
-    const optsY = 236;
-    const hintY = hasOptions ? 300 : 236;
-    const blockH = hintY + 20;
+    const howToY = 108;
+    const howToH = 118;
+    const optsY = howToY + howToH / 2 + 40;
+    const startY = hasOptions ? optsY + 64 : optsY;
+    const blockH = startY + 36;
     const gTop = this.scale.height - 110;
     const top = Math.round(
       Phaser.Math.Clamp(
@@ -56,8 +56,8 @@ export class MenuScene extends Phaser.Scene {
     const UI = 20;
     this.add
       .text(x + 4, top + 4, "Jumpin' Jack", {
-        fontFamily: "Luckiest Guy, cursive",
-        fontSize: "64px",
+        fontFamily: "Titan One, sans-serif",
+        fontSize: "56px",
         color: "#16324f",
         align: "center",
       })
@@ -65,40 +65,33 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(UI);
     this.add
       .text(x, top, "Jumpin' Jack", {
-        fontFamily: "Luckiest Guy, cursive",
-        fontSize: "64px",
-        color: "#fff8e7",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(UI);
-    this.add
-      .text(x, top + subY, "Jump to the bigger number\nbefore the pad gives way.", {
-        fontFamily: "Nunito, sans-serif",
-        fontSize: "16px",
+        fontFamily: "Titan One, sans-serif",
+        fontSize: "56px",
         color: "#fff8e7",
         align: "center",
       })
       .setOrigin(0.5)
       .setDepth(UI);
 
-    const start = this.add
-      .rectangle(x, top + startY, 240, 56, GOLD)
-      .setInteractive({ useHandCursor: true })
-      .setDepth(UI);
+    addPaperCard(this, x, top + howToY, PLAY_COLUMN - 64, howToH, 18).setDepth(UI);
     this.add
-      .text(x, top + startY, "Start Climb", {
-        fontFamily: "Fredoka, sans-serif",
-        fontSize: "24px",
-        color: "#1d3557",
+      .text(x, top + howToY - 22, "Jump to the bigger number\nbefore the pad gives way.", {
+        fontFamily: "Nunito, sans-serif",
+        fontSize: "16px",
+        color: "#16324f",
+        align: "center",
       })
       .setOrigin(0.5)
       .setDepth(UI);
-    start.on("pointerup", () => {
-      if (this.panel?.visible) return;
-      soundsOf(this).play("button_press");
-      this.begin();
-    });
+    this.add
+      .text(x, top + howToY + 28, "Tap a platform  ·  arrows / A D", {
+        fontFamily: "Nunito, sans-serif",
+        fontSize: "13px",
+        color: "#5a6d80",
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(UI);
 
     if (hasOptions) {
       const opts = this.add
@@ -119,14 +112,23 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
+    const start = this.add
+      .rectangle(x, top + startY, 240, 56, GOLD)
+      .setInteractive({ useHandCursor: true })
+      .setDepth(UI);
     this.add
-      .text(x, top + hintY, "Tap a platform  ·  arrows / A D", {
-        fontFamily: "Nunito, sans-serif",
-        fontSize: "12px",
-        color: "#fff8e7",
+      .text(x, top + startY, "Start Climb", {
+        fontFamily: "Fredoka, sans-serif",
+        fontSize: "24px",
+        color: "#1d3557",
       })
       .setOrigin(0.5)
       .setDepth(UI);
+    start.on("pointerup", () => {
+      if (this.panel?.visible) return;
+      soundsOf(this).play("button_press");
+      this.begin();
+    });
 
     const dirt = this.add.graphics();
     dirt.setDepth(8);
