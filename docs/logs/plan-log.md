@@ -185,6 +185,10 @@ Larger clouds plus a red biplane, hot-air balloon, and bird flock. Start hint is
 
 At most two non-cloud actors on screen. Balloon is no longer always present; one spawn queue picks plane / flock / balloon / butterfly.
 
+## 2026-09-15 — Pause, HUD, result overlay
+
+Pause hit was an alpha-0 circle inside a Phaser 4 container (same miss as pads); now the gold button plus a screen-space bounds check, and Space toggles pause. Result launches over the paused climb with camera blur, rounded paper card, score cheer title, giant score, Menu. HUD is Lv left, Score beside Best, sized to text.
+
 
 
 

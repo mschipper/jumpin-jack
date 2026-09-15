@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { JUMP_ARC, JUMP_MS, PAD_LEFT, PAD_RIGHT, SHAKE_FRACTION, STEP } from "../constants";
 import { soundsOf } from "../audio/SoundManager";
+import { cheerForScore } from "../cheers";
 import { hostEvents, externalScores } from "../host";
 import { pickPair } from "../numbers/pair";
 import { isCasualWin, shouldLevelBreak } from "../modes";
@@ -45,6 +46,7 @@ export class PlayScene extends Phaser.Scene {
   private remainingOnPause = 0;
   private groundTop = 0;
   private startHint: Phaser.GameObjects.Text | null = null;
+  private pauseAt = 0;
 
   constructor() {
     super("climb");
@@ -163,6 +165,10 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private onPointer(pointer: Phaser.Input.Pointer): void {
+    if (this.hud.hitPause(pointer.x, pointer.y)) {
+      this.togglePause();
+      return;
+    }
     if (this.paused || this.busy || this.falling || this.jumping || !this.pair) return;
     const pt = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
     const over = (p: SodPlatform | null) => {
@@ -175,7 +181,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private onKey(e: KeyboardEvent): void {
-    if (e.key === "Escape") {
+    if (e.key === "Escape" || e.key === " " || e.code === "Space") {
+      e.preventDefault?.();
       this.togglePause();
       return;
     }
@@ -197,7 +204,7 @@ export class PlayScene extends Phaser.Scene {
     if (!correct) {
       this.hideStartHint();
       target.vanish(this);
-      this.startFall("You fell!");
+      this.startFall();
       return;
     }
 
@@ -222,7 +229,7 @@ export class PlayScene extends Phaser.Scene {
       this.hud.set(this.score, newLevel, Math.max(this.best, this.score), this.config.mode);
       if (isCasualWin(this.config.mode, this.floor)) {
         soundsOf(this).play("level_complete");
-        this.finish("You made it!");
+        this.finish(true);
         return;
       }
       this.stand = target;
@@ -264,7 +271,7 @@ export class PlayScene extends Phaser.Scene {
     });
   }
 
-  private startFall(title: string): void {
+  private startFall(): void {
     this.falling = true;
     this.busy = true;
     soundsOf(this).play("fail");
@@ -281,26 +288,34 @@ export class PlayScene extends Phaser.Scene {
           this.player.sprite.y + 4,
         );
       },
-      onComplete: () => this.finish(title),
+      onComplete: () => this.finish(false),
     });
   }
 
-  private finish(title: string): void {
+  private finish(win: boolean): void {
     const isRecord = !externalScores(this) && writeBest(this.config, this.score);
     if (this.score > this.best) this.best = this.score;
-    hostEvents(this).emit("game_end", { score: this.score, title });
+    const title = cheerForScore(this.score);
+    hostEvents(this).emit("game_end", { score: this.score, title, win });
     externalScores(this)?.submit(this.score, { ...this.config });
-    this.scene.start("result", {
+    const blur = this.cameras.main.filters?.internal;
+    if (blur) blur.addBlur(1, 2, 2, 1.4);
+    this.scene.pause();
+    this.scene.launch("result", {
       title,
       score: this.score,
       best: this.best,
       isRecord,
+      win,
       config: this.config,
     });
+    this.scene.bringToTop("result");
   }
 
   private togglePause(): void {
     if (this.falling || this.jumping) return;
+    if (this.time.now - this.pauseAt < 80) return;
+    this.pauseAt = this.time.now;
     if (!this.paused) {
       this.paused = true;
       this.remainingOnPause =
@@ -435,7 +450,7 @@ export class PlayScene extends Phaser.Scene {
         const wasStand = p === this.stand;
         soundsOf(this).play("crumble");
         p.crumble(this);
-        if (wasStand && !this.falling && !this.jumping) this.startFall("You fell!");
+        if (wasStand && !this.falling && !this.jumping) this.startFall();
       } else if (now >= p.shakeAt) {
         p.startShake(this);
       }

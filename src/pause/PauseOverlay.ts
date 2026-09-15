@@ -2,36 +2,44 @@ import Phaser from "phaser";
 import { soundsOf } from "../audio/SoundManager";
 import { GOLD, NAVY, PLAY_COLUMN } from "../constants";
 import { columnLeft } from "../world/column";
+import { addPaperCard } from "../ui/paperCard";
 
 export class PauseOverlay {
   readonly root: Phaser.GameObjects.Container;
   private readonly scene: Phaser.Scene;
+  private readonly veil: Phaser.GameObjects.Rectangle;
+  private resumeBtn: Phaser.GameObjects.Rectangle;
+  private quitBtn: Phaser.GameObjects.Text;
+  private muteBtn: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, onResume: () => void, onQuit: () => void) {
     this.scene = scene;
     const w = PLAY_COLUMN - 32;
     const cy = scene.scale.height / 2;
-    const veil = scene.add.rectangle(PLAY_COLUMN / 2, cy, scene.scale.width * 2, scene.scale.height * 2, NAVY, 0.35);
-    const card = scene.add.rectangle(PLAY_COLUMN / 2, cy, w, 268, 0xfffdf6);
+    const cx = PLAY_COLUMN / 2;
+    this.veil = scene.add
+      .rectangle(cx, cy, scene.scale.width * 2, scene.scale.height * 2, NAVY, 0.45)
+      .setInteractive();
+    const card = addPaperCard(scene, cx, cy, w, 268);
     const title = scene.add
-      .text(PLAY_COLUMN / 2, cy - 86, "Paused", {
+      .text(cx, cy - 86, "Paused", {
         fontFamily: "Paytone One, sans-serif",
         fontSize: "32px",
         color: "#16324f",
       })
       .setOrigin(0.5);
     const resume = scene.add
-      .rectangle(PLAY_COLUMN / 2, cy - 8, 200, 48, GOLD)
+      .rectangle(cx, cy - 8, 200, 48, GOLD)
       .setInteractive({ useHandCursor: true });
     const resumeT = scene.add
-      .text(PLAY_COLUMN / 2, cy - 8, "Resume", {
+      .text(cx, cy - 8, "Resume", {
         fontFamily: "Fredoka, sans-serif",
         fontSize: "20px",
         color: "#1d3557",
       })
       .setOrigin(0.5);
     const muteT = scene.add
-      .text(PLAY_COLUMN / 2, cy + 48, muteLabel(soundsOf(scene).muted), {
+      .text(cx, cy + 48, muteLabel(soundsOf(scene).muted), {
         fontFamily: "Nunito, sans-serif",
         fontSize: "16px",
         color: "#16324f",
@@ -39,7 +47,7 @@ export class PauseOverlay {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
     const quit = scene.add
-      .text(PLAY_COLUMN / 2, cy + 92, "Change setup", {
+      .text(cx, cy + 92, "Change setup", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "14px",
         color: "#16324f",
@@ -62,7 +70,9 @@ export class PauseOverlay {
       onQuit();
     });
 
-    this.root = scene.add.container(columnLeft(scene), 0, [veil, card, title, resume, resumeT, muteT, quit]);
+    this.root = scene.add.container(columnLeft(scene), 0, [
+      this.veil, card, title, resume, resumeT, muteT, quit,
+    ]);
     this.root.setScrollFactor(0);
     this.root.setDepth(50);
     this.resumeBtn = resume;
@@ -71,13 +81,10 @@ export class PauseOverlay {
     this.hide();
   }
 
-  private resumeBtn: Phaser.GameObjects.Rectangle;
-  private quitBtn: Phaser.GameObjects.Text;
-  private muteBtn: Phaser.GameObjects.Text;
-
   show(): void {
     this.root.setVisible(true);
     this.root.setActive(true);
+    this.veil.setInteractive();
     this.resumeBtn.setInteractive({ useHandCursor: true });
     this.quitBtn.setInteractive({ useHandCursor: true });
     this.muteBtn.setInteractive({ useHandCursor: true });
@@ -87,6 +94,7 @@ export class PauseOverlay {
   hide(): void {
     this.root.setVisible(false);
     this.root.setActive(false);
+    this.veil.disableInteractive();
     this.resumeBtn.disableInteractive();
     this.quitBtn.disableInteractive();
     this.muteBtn.disableInteractive();
@@ -94,6 +102,7 @@ export class PauseOverlay {
 
   layout(scene: Phaser.Scene): void {
     this.root.x = columnLeft(scene);
+    this.veil.setSize(scene.scale.width * 2, scene.scale.height * 2);
   }
 }
 
