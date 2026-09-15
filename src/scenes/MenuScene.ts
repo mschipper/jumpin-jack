@@ -53,6 +53,7 @@ export class MenuScene extends Phaser.Scene {
       ),
     );
 
+    const UI = 20;
     this.add
       .text(x + 4, top + 4, "Jumpin' Jack", {
         fontFamily: "Paytone One, sans-serif",
@@ -60,7 +61,8 @@ export class MenuScene extends Phaser.Scene {
         color: "#16324f",
         align: "center",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(UI);
     this.add
       .text(x, top, "Jumpin' Jack", {
         fontFamily: "Paytone One, sans-serif",
@@ -68,7 +70,8 @@ export class MenuScene extends Phaser.Scene {
         color: "#fff8e7",
         align: "center",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(UI);
     this.add
       .text(x, top + subY, "Jump to the bigger number\nbefore the pad gives way.", {
         fontFamily: "Nunito, sans-serif",
@@ -76,18 +79,21 @@ export class MenuScene extends Phaser.Scene {
         color: "#fff8e7",
         align: "center",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(UI);
 
     const start = this.add
       .rectangle(x, top + startY, 240, 56, GOLD)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setDepth(UI);
     this.add
       .text(x, top + startY, "Start Climb", {
         fontFamily: "Fredoka, sans-serif",
         fontSize: "24px",
         color: "#1d3557",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(UI);
     start.on("pointerup", () => {
       if (this.panel?.visible) return;
       soundsOf(this).play("button_press");
@@ -97,14 +103,16 @@ export class MenuScene extends Phaser.Scene {
     if (hasOptions) {
       const opts = this.add
         .rectangle(x, top + optsY, 200, 44, NAVY, 0.82)
-        .setInteractive({ useHandCursor: true });
+        .setInteractive({ useHandCursor: true })
+        .setDepth(UI);
       this.add
         .text(x, top + optsY, "Game options", {
           fontFamily: "Nunito, sans-serif",
           fontSize: "16px",
           color: "#fff8e7",
         })
-        .setOrigin(0.5);
+        .setOrigin(0.5)
+        .setDepth(UI);
       opts.on("pointerup", () => {
         soundsOf(this).play("button_press");
         this.showOptions();
@@ -117,15 +125,18 @@ export class MenuScene extends Phaser.Scene {
         fontSize: "12px",
         color: "#fff8e7",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(UI);
 
     const dirt = this.add.graphics();
+    dirt.setDepth(8);
     dirt.fillStyle(0xc9a066, 1);
     dirt.fillRect(0, gTop + 16, this.scale.width, 200);
     dirt.fillStyle(0x6fbf3b, 1);
     dirt.fillRect(0, gTop, this.scale.width, 22);
     const hero = this.add.sprite(x, gTop, "adventurer", 0).setOrigin(0.5, 1);
     hero.setScale(1);
+    hero.setDepth(8);
     hero.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
 
