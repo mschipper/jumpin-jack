@@ -14,7 +14,7 @@ Locked in Phase 1. Do not reopen unless Mike changes them.
 | HUD / timer | **A Classic** — navy rounded pills, gold numbers, gold circle pause, green-to-gold timer bar, Fredoka/Nunito type |
 | Menu | **Toy buttons** — big navy buttons, selected gold, gold **Start Climb**. Robot (or chosen character) waits on the ground. |
 | End overlay | **Report card** — cream paper sheet, “You fell!” / “You made it!”, platform count, NEW RECORD pill, Climb again, Change setup |
-| Title type | Paytone One wordmark in the sky |
+| Title type | Luckiest Guy wordmark in the sky |
 | Player | **Adventurer** from `reference assets/adventurer_tilesheet.png` (80×110 cells). Idle `0,0` / `1,8`. Jump duck `1,0` → air `0,4` → kick `2,2`. Nearest-neighbor scale. **Drop shadow is runtime, not baked:** navy `#16324F` at 35% opacity, offset 2px right / 4px down (at 1× display). Foozle robot unused. |
 
 Play column ~420px centered. Desktop landscape expands the sky on both sides. Mobile is the column only.
@@ -22,7 +22,7 @@ Play column ~420px centered. Desktop landscape expands the sky on both sides. Mo
 ## Type
 
 - HUD / buttons: Nunito ExtraBold + Fredoka
-- Wordmark: Paytone One
+- Wordmark: Luckiest Guy
 - Numbers on tags: Nunito / Quicksand ExtraBold, US commas, stacked fractions
 
 ## Not yet produced (Phase 2)

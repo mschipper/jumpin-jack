@@ -56,8 +56,8 @@ export class MenuScene extends Phaser.Scene {
     const UI = 20;
     this.add
       .text(x + 4, top + 4, "Jumpin' Jack", {
-        fontFamily: "Paytone One, sans-serif",
-        fontSize: "58px",
+        fontFamily: "Luckiest Guy, cursive",
+        fontSize: "64px",
         color: "#16324f",
         align: "center",
       })
@@ -65,8 +65,8 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(UI);
     this.add
       .text(x, top, "Jumpin' Jack", {
-        fontFamily: "Paytone One, sans-serif",
-        fontSize: "58px",
+        fontFamily: "Luckiest Guy, cursive",
+        fontSize: "64px",
         color: "#fff8e7",
         align: "center",
       })
