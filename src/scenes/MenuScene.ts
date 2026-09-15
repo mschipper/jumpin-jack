@@ -38,8 +38,23 @@ export class MenuScene extends Phaser.Scene {
     this.events.once("shutdown", () => this.scale.off("resize", this.onResize, this));
 
     const x = columnLeft(this) + PLAY_COLUMN / 2;
+    const hasOptions = this.openFields.length > 0;
+    const subY = 70;
+    const startY = 162;
+    const optsY = 236;
+    const hintY = hasOptions ? 300 : 236;
+    const blockH = hintY + 20;
+    const gTop = this.scale.height - 110;
+    const top = Math.round(
+      Phaser.Math.Clamp(
+        (this.scale.height - blockH) / 2,
+        36,
+        Math.max(36, gTop - 120 - blockH),
+      ),
+    );
+
     this.add
-      .text(x + 4, 118, "Jumpin' Jack", {
+      .text(x + 4, top + 4, "Jumpin' Jack", {
         fontFamily: "Paytone One, sans-serif",
         fontSize: "58px",
         color: "#16324f",
@@ -47,7 +62,7 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.add
-      .text(x, 114, "Jumpin' Jack", {
+      .text(x, top, "Jumpin' Jack", {
         fontFamily: "Paytone One, sans-serif",
         fontSize: "58px",
         color: "#fff8e7",
@@ -55,7 +70,7 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.add
-      .text(x, 178, "Jump to the bigger number\nbefore the pad gives way.", {
+      .text(x, top + subY, "Jump to the bigger number\nbefore the pad gives way.", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "16px",
         color: "#fff8e7",
@@ -64,10 +79,10 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const start = this.add
-      .rectangle(x, 268, 240, 56, GOLD)
+      .rectangle(x, top + startY, 240, 56, GOLD)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(x, 268, "Start Climb", {
+      .text(x, top + startY, "Start Climb", {
         fontFamily: "Fredoka, sans-serif",
         fontSize: "24px",
         color: "#1d3557",
@@ -79,12 +94,12 @@ export class MenuScene extends Phaser.Scene {
       this.begin();
     });
 
-    if (this.openFields.length > 0) {
+    if (hasOptions) {
       const opts = this.add
-        .rectangle(x, 340, 200, 44, NAVY, 0.82)
+        .rectangle(x, top + optsY, 200, 44, NAVY, 0.82)
         .setInteractive({ useHandCursor: true });
       this.add
-        .text(x, 340, "Game options", {
+        .text(x, top + optsY, "Game options", {
           fontFamily: "Nunito, sans-serif",
           fontSize: "16px",
           color: "#fff8e7",
@@ -97,14 +112,13 @@ export class MenuScene extends Phaser.Scene {
     }
 
     this.add
-      .text(x, 400, "Tap a platform  ·  arrows / A D", {
+      .text(x, top + hintY, "Tap a platform  ·  arrows / A D", {
         fontFamily: "Nunito, sans-serif",
         fontSize: "12px",
         color: "#fff8e7",
       })
       .setOrigin(0.5);
 
-    const gTop = this.scale.height - 110;
     const dirt = this.add.graphics();
     dirt.fillStyle(0xc9a066, 1);
     dirt.fillRect(0, gTop + 16, this.scale.width, 200);
