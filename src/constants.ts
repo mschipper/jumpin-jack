@@ -1,6 +1,9 @@
 export const PLAY_COLUMN = 420;
 export const GAME_HEIGHT = 844;
 export const STEP = 200;
+/** Horizontal pad centers inside the play column. */
+export const PAD_LEFT = 0.22;
+export const PAD_RIGHT = 0.78;
 export const REST_Y = 0.22; // default / low rest; see cameraPace.ts for live range
 export const FLOORS_PER_LEVEL = 20;
 export const JUMP_MS = 480;

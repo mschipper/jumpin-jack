@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { JUMP_ARC, JUMP_MS, SHAKE_FRACTION, STEP } from "../constants";
+import { JUMP_ARC, JUMP_MS, PAD_LEFT, PAD_RIGHT, SHAKE_FRACTION, STEP } from "../constants";
 import { soundsOf } from "../audio/SoundManager";
 import { hostEvents, externalScores } from "../host";
 import { pickPair } from "../numbers/pair";
@@ -44,6 +44,7 @@ export class PlayScene extends Phaser.Scene {
   private duration = 4500;
   private remainingOnPause = 0;
   private groundTop = 0;
+  private startHint: Phaser.GameObjects.Text | null = null;
 
   constructor() {
     super("climb");
@@ -87,8 +88,9 @@ export class PlayScene extends Phaser.Scene {
 
     this.spawnChoice(this.groundTop - STEP, true);
     this.hud.set(this.score, 1, this.best, this.config.mode);
-    this.hud.setHint("JUMP TO THE BIGGER NUMBER");
+    this.hud.setHint("");
     this.hud.setTimer(1, this.config.mode);
+    this.showStartHint();
 
     this.input.keyboard?.on("keydown", (e: KeyboardEvent) => this.onKey(e));
     this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => this.onPointer(pointer));
@@ -130,8 +132,8 @@ export class PlayScene extends Phaser.Scene {
       { min: this.config.min, max: this.config.max },
     );
     this.pair = pair;
-    const left = new SodPlatform(this, columnX(this, 0.27), worldY, 0.27, pair.left);
-    const right = new SodPlatform(this, columnX(this, 0.73), worldY, 0.73, pair.right);
+    const left = new SodPlatform(this, columnX(this, PAD_LEFT), worldY, PAD_LEFT, pair.left);
+    const right = new SodPlatform(this, columnX(this, PAD_RIGHT), worldY, PAD_RIGHT, pair.right);
     left.hit.on("pointerup", () => this.choose("left"));
     right.hit.on("pointerup", () => this.choose("right"));
     this.leftPlat = left;
@@ -193,12 +195,15 @@ export class PlayScene extends Phaser.Scene {
     const correct = side === this.pair.bigger;
     other.vanish(this);
     if (!correct) {
+      this.hideStartHint();
       target.vanish(this);
       this.startFall("You fell!");
       return;
     }
 
     this.onBreak = false;
+    soundsOf(this).play("correct");
+    this.hideStartHint();
     const destX = columnX(this, target.xFrac);
     const destY = target.worldY;
     this.startJump(destX, destY, () => {
@@ -212,7 +217,7 @@ export class PlayScene extends Phaser.Scene {
         soundsOf(this).play("level_complete");
         hostEvents(this).emit("level_break", { level: newLevel });
       } else {
-        this.hud.setHint("JUMP TO THE BIGGER NUMBER");
+        this.hud.setHint("");
       }
       this.hud.set(this.score, newLevel, Math.max(this.best, this.score), this.config.mode);
       if (isCasualWin(this.config.mode, this.floor)) {
@@ -254,7 +259,6 @@ export class PlayScene extends Phaser.Scene {
         this.player.place(toX, toY);
         this.player.idle();
         this.jumping = false;
-        soundsOf(this).play("correct");
         onLand();
       },
     });
@@ -352,13 +356,44 @@ export class PlayScene extends Phaser.Scene {
     this.paintGround();
     this.hud.layout(this);
     this.pauseUi.layout(this);
-    if (this.leftPlat) this.leftPlat.container.x = columnX(this, 0.27);
-    if (this.rightPlat) this.rightPlat.container.x = columnX(this, 0.73);
+    if (this.leftPlat) this.leftPlat.container.x = columnX(this, PAD_LEFT);
+    if (this.rightPlat) this.rightPlat.container.x = columnX(this, PAD_RIGHT);
+    if (this.startHint) {
+      this.startHint.setPosition(this.scale.width / 2, this.scale.height * 0.42);
+    }
     if (this.stand) this.stand.container.x = columnX(this, this.stand.xFrac);
     const px = this.stand ? columnX(this, this.stand.xFrac) : columnX(this, 0.5);
     const py = this.stand ? this.stand.worldY : this.groundTop;
     if (!this.jumping && !this.falling) this.player.place(px, py);
     this.retargetCamera(py);
+  }
+
+  private showStartHint(): void {
+    this.startHint = this.add
+      .text(this.scale.width / 2, this.scale.height * 0.42, "Jump to the\nbigger number", {
+        fontFamily: "Paytone One, sans-serif",
+        fontSize: "40px",
+        color: "#fff8e7",
+        align: "center",
+        stroke: "#16324f",
+        strokeThickness: 8,
+        lineSpacing: 6,
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(30);
+  }
+
+  private hideStartHint(): void {
+    if (!this.startHint) return;
+    const hint = this.startHint;
+    this.startHint = null;
+    this.tweens.add({
+      targets: hint,
+      alpha: 0,
+      duration: 180,
+      onComplete: () => hint.destroy(),
+    });
   }
 
   private retargetCamera(standWorldY: number): void {

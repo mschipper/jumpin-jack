@@ -70,13 +70,14 @@ export class Hud {
       .setVisible(false);
 
     this.hint = scene.add
-      .text(PLAY_COLUMN / 2, 50, "JUMP TO THE BIGGER NUMBER", {
+      .text(PLAY_COLUMN / 2, 50, "", {
         fontFamily: "Fredoka, sans-serif",
         fontSize: "12px",
         color: "#ffffff",
         fontStyle: "700",
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(0.5, 0)
+      .setVisible(false);
 
     this.root = scene.add.container(left, 28, [
       p.bg, p.t, p.v, lv.bg, lv.t, lv.v, b.bg, b.t, b.v,
@@ -103,6 +104,7 @@ export class Hud {
 
   setHint(text: string): void {
     this.hint.setText(text);
+    this.hint.setVisible(text.length > 0);
   }
 
   setTimer(pct: number, mode: PlayMode, remainingMs?: number): void {

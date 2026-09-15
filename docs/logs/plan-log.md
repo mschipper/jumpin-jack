@@ -177,6 +177,10 @@ Procedural cream stacked-ellipse clouds with navy offset shadows, slow drift, cl
 
 Wired across menu, climb, pause, results. 37 tests. Vite serves the mp3s. Headless Chrome mounts the Phaser canvas but does not paint WebGL, so visual/audio feel needs Mike’s playtest.
 
+## 2026-09-15 — Sky cast, hint, pads, correct SFX
+
+Larger clouds plus a red biplane, hot-air balloon, and bird flock. Start hint is a large centered banner that leaves on the first jump. Pads spread to 0.22/0.78. Correct SFX was both late (played after the 480ms land) and had ~100ms of baked silence plus a slow power-up arpeggio; trim silence, speed the clip, play on pick.
+
 
 
 
